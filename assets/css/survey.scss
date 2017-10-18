@@ -1,0 +1,305 @@
+$primaryColor: #82be50;
+$secondaryColor: #374141;
+$questionHeader: #374141;
+
+.survey-container {
+  margin-top: 10px;
+}
+
+#survey-questions-pjax {
+  transition: all .2s;
+}
+
+.survey-container, .kv-editable-popover {
+  .form-group {
+    min-width: 50%;
+  }
+  .form-control {
+    padding: 0;
+    height: 23px;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 1px solid #2196F3;
+    border-radius: 0;
+    background: transparent;
+    width: 100% !important;
+    box-shadow: none !important;
+  }
+  .input-group {
+    .input-group-addon {
+      padding: 0 8px;
+      font-size: 14px;
+      font-weight: normal;
+      line-height: 1;
+      color: #555;
+      text-align: center;
+      background-color: transparent;
+      border: none;
+      border-radius: 4px;
+    }
+    .form-control {
+      padding: 0;
+      height: 23px;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      border-bottom: 1px solid #2196F3;
+      border-radius: 0;
+      background: transparent;
+      width: 100% !important;
+      box-shadow: none !important;
+    }
+  }
+  .btn {
+    background-color: transparent;
+    color: #393939;
+    border-radius: 5px;
+    min-width: 28px;
+    box-shadow: 0 3px 7px transparent;
+    margin: 7px 3px 10px 4px;
+    &:hover {
+      box-shadow: 0 3px 7px #9a9a9a;
+    }
+    &.btn-primary {
+      border-color: #2196F3;
+      background-color: transparent;
+      &:hover, &:focus {
+        background-color: #239dff;
+        border-color: #239dff;
+        color: #fff;
+      }
+      &:active, &:active:focus {
+        background-color: #1f7aca;
+        border-color: #1f7aca;
+        color: #fff;
+      }
+    }
+
+    &.btn-success {
+      border-color: #009688;
+      background-color: transparent;
+      &:hover, &:focus {
+        background-color: #00bdad;
+        border-color: #00bdad;
+        color: #fff;
+      }
+      &:active, &:active:focus {
+        background-color: #00a696;
+        border-color: #00a696;
+        color: #fff;
+      }
+    }
+
+    &.btn-info {
+      border-color: #00bcd4;
+      background-color: transparent;
+      &:hover, &:focus {
+        background-color: #00d5ed;
+        border-color: #00d5ed;
+        color: #fff;
+      }
+      &:active, &:active:focus {
+        background-color: #0099b1;
+        border-color: #0099b1;
+        color: #fff;
+      }
+    }
+
+    &.btn-danger {
+      border-color: #F44336;
+      background-color: transparent;
+      color: #F44336;
+      &:hover, &:focus {
+        background-color: #ff4637;
+        border-color: #ff4637;
+        color: #fff;
+      }
+      &:active, &:active:focus {
+        background-color: #e74036;
+        border-color: #e74036;
+        color: #fff;
+      }
+    }
+  }
+  .has-success .form-control {
+    border-color: #009688;
+  }
+  .has-error .form-control {
+    border-color: #F44336;
+  }
+  .survey-block {
+    background: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    position: relative;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.14);
+    .survey-name-wrap, .survey-question-name-wrap, .survey-question-view-wrap {
+      background-color: $primaryColor;
+      border-radius: 5px;
+      padding: 10px;
+      .kv-editable-link {
+        color: #ffffff;
+        font-size: 19px;
+      }
+    }
+    .survey-questions-form-field {
+      margin: 10px;
+    }
+    .survey-question-view-wrap {
+      background-color: #e3e8ea;
+      h4 {
+        display: inline-block;
+      }
+
+    }
+    .btn {
+      padding: 2px;
+      &.btn-primary {
+        border-color: #ababab;
+        color: #ababab;
+
+        background-color: transparent;
+        &:hover, &:focus {
+          background-color: #239dff;
+          border-color: #239dff;
+          color: #fff;
+        }
+        &:active, &:active:focus {
+          background-color: #1f7aca;
+          border-color: #1f7aca;
+          color: #fff;
+        }
+      }
+
+      &.btn-success {
+        border-color: #ababab;
+        color: #ababab;
+        background-color: transparent;
+        &:hover, &:focus {
+          background-color: #00bdad;
+          border-color: #00bdad;
+          color: #fff;
+        }
+        &:active, &:active:focus {
+          background-color: #00a696;
+          border-color: #00a696;
+          color: #fff;
+        }
+      }
+
+      &.btn-info {
+        border-color: #ababab;
+        color: #ababab;
+        background-color: transparent;
+        &:hover, &:focus {
+          background-color: #00d5ed;
+          border-color: #00d5ed;
+          color: #fff;
+        }
+        &:active, &:active:focus {
+          background-color: #0099b1;
+          border-color: #0099b1;
+          color: #fff;
+        }
+      }
+
+      &.btn-danger {
+        border-color: #ababab;
+        background-color: transparent;
+        color: #ababab;
+        &:hover, &:focus {
+          background-color: #ff4637;
+          border-color: #ff4637;
+          color: #fff;
+        }
+        &:active, &:active:focus {
+          background-color: #e74036;
+          border-color: #e74036;
+          color: #fff;
+        }
+      }
+    }
+    .survey-question-name-wrap {
+      background-color: transparent;
+      .btn {
+        margin-left: 5px;
+      }
+      .survey-questions-form-field {
+        margin: 0;
+      }
+      .form-control {
+        color: $secondaryColor;
+        font-weight: bold;
+        font-size: 16px;
+      }
+    }
+    label {
+      margin-right: 10px;
+    }
+    .select2-container--krajee {
+      display: inline-block;
+      width: inherit !important;
+      min-width: 200px;
+      .select2-selection--single {
+        padding: 0;
+        height: 23px;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        border-bottom: 1px solid #2196F3;
+        border-radius: 0;
+        background: transparent;
+        width: 100% !important;
+        box-shadow: none !important;
+        .select2-selection__arrow {
+          border-left: none;
+          top: -5px;
+        }
+      }
+
+    }
+    .points-wrap {
+      width: 50px;
+      display: inline-block;
+      text-align: center;
+      input{
+        text-align: center;
+      }
+      .points-title{
+        font-size: 12px;
+        color: #afafaf;
+      }
+    }
+    .checkbox-inline{
+      min-width: initial;
+      label{
+        font-weight: 300;
+      }
+    }
+    .survey-questions-form-field-inline{
+      input{
+        width: 40px !important;
+        text-align: center;
+      }
+    }
+  }
+}
+
+.select2-container.select2-container--krajee .select2-dropdown {
+  box-shadow: 0 7px 15px rgba(0, 0, 0, 0.26);
+  border-color: transparent;
+}
+
+.survey-container {
+  .survey-btn {
+    margin: 20px auto;
+  }
+}
+
+.answers-container {
+  .pseudo-checkbox {
+    margin: 10px 0 10px 10px;
+  }
+}
