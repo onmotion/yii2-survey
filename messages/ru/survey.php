@@ -30,6 +30,7 @@ return [
     'Name' => 'Наименование',
     'Is Closed' => 'Закрыт',
     'Current types are not compatible, all entered data will be deleted. Are you sure?' => 'Текущие типы несовместимы, все введенные данные будут удалены. Вы уверены?',
+    'Label' => 'Заголовок',
 
     'Multiple choice' => 'Множественный выбор',
     'One choise of list' => 'Один из списка',
@@ -37,4 +38,7 @@ return [
     'Ranking' => 'Ранжирование',
     'Slider' => 'Слайдер',
     'Single textbox' => 'Одно текстовое поле',
+    'Multiple textboxes' => 'Несколько текстовых полей',
+    'Comment box' => 'Открытый ответ',
+    'Date/Time' => 'Дата/Время',
 ];

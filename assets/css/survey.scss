@@ -279,9 +279,18 @@ $questionHeader: #374141;
       }
     }
     .survey-questions-form-field-inline{
+      margin: 10px;
       input{
         width: 40px !important;
         text-align: center;
+
+      }
+    }
+    .inline-input{
+      display: flex;
+      flex-wrap: nowrap;
+      label{
+        flex-shrink: 0;
       }
     }
   }

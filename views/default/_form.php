@@ -54,7 +54,7 @@ echo Dialog::widget();
             'header' => 'Expired at',
             'asPopover' => true,
             'size' => 'md',
-            'inputType' => Editable::INPUT_DATE,
+            'inputType' => Editable::INPUT_DATETIME,
             'formOptions' => [
                 'action' => Url::to(['/survey/default/update-editable', 'property' => 'survey_expired_at'])
             ],
