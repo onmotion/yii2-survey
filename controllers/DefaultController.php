@@ -2,6 +2,7 @@
 
 namespace common\modules\survey\controllers;
 
+use common\modules\survey\models\search\SurveySearch;
 use common\modules\survey\models\Survey;
 use common\modules\survey\models\SurveyAnswer;
 use common\modules\survey\models\SurveyQuestion;
@@ -22,7 +23,19 @@ class DefaultController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $searchModel = new SurveySearch();
+        $dataProvider = $searchModel->search(\Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionView($id)
+    {
+        $survey = $this->findModel($id);
+        return $this->render('view', ['survey' => $survey]);
     }
 
     public function actionCreate()
@@ -38,6 +51,14 @@ class DefaultController extends Controller
     {
 
         $survey = $this->findModel($id);
+
+        if (\Yii::$app->request->isPjax){
+            $post = \Yii::$app->request->post();
+            if ($survey->load($post) && $survey->validate()){
+                $survey->save();
+                return $this->renderAjax('update', ['survey' => $survey]);
+            }
+        }
 
         return $this->render('update', ['survey' => $survey]);
     }

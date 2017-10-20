@@ -31,6 +31,62 @@ $(document).ready(function (e) {
         container.find('.update-question-btn').click();
     });
 
+    $(document).on('click', '.submit-on-click', function (e) {
+        let container = $(this).closest('[data-pjax-container]');
+        container.find('button[type=submit]').click();
+    });
+
+
+
+    async function submitAllForms() {
+        var forms = [];
+        $(this).prop('disabled', true);
+        var allFormsIsValid = true;
+
+        $(document).find('form.form-inline').each(function (i, el) {
+            forms.push($(el));
+        });
+
+        for (let item of forms) {
+            try {
+                await confirmForm(item);
+            } catch (err) {
+                allFormsIsValid = false;
+            }
+        }
+
+        $(this).prop('disabled', false);
+
+        if (allFormsIsValid) {
+            location.href = $('#done').data('action');
+        }
+    }
+
+    $(document).on('click', '#done', submitAllForms);
+
+
+    function confirmForm(form) {
+        return new Promise((resolve, reject) => {
+            console.log(form);
+            let container = form.closest('[data-pjax-container]');
+            form.submit();
+            container.on('afterValidate', function (event, messages, errorAttributes) {
+                if (errorAttributes.length > 0) {
+                    reject(messages);
+                }
+            });
+            container.on('pjax:end', function (e, contents, options) {
+                console.log(e);
+                resolve(e);
+            });
+            container.on('pjax:error', function (e, contents, options) {
+                console.log(e);
+                reject(e);
+            });
+        });
+    }
+
+
     let showProgress;
     showProgress = function showProgress(container) {
         try {
@@ -66,7 +122,6 @@ $(document).ready(function (e) {
     });
 
     $(document).on('pjax:complete', function (e) {
-        console.log(e);
         if ((e.target.id).indexOf('survey-questions-pjax-') !== -1) {
             hideProgress($('#' + e.target.id));
         }

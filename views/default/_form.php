@@ -11,6 +11,7 @@ use kartik\editable\Editable;
 use kartik\helpers\Html;
 use wbraganca\dynamicform\DynamicFormWidget;
 use yii\helpers\Url;
+use yii\widgets\ActiveForm;
 use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
@@ -64,6 +65,37 @@ echo Dialog::widget();
             ]
         ]);
 
+        Pjax::begin([
+            'id' => 'survey-pjax',
+            'enablePushState' => false,
+            'timeout' => 0,
+            'scrollTo' => false,
+            'clientOptions' => [
+                'type' => 'post',
+                'skipOuterContainers' => true,
+            ]
+        ]);
+
+        $form = ActiveForm::begin([
+            'id' => 'survey-form',
+            'action' => Url::toRoute(['/survey/default/update', 'id' => $survey->survey_id]),
+            'options' => ['class' => 'form-inline', 'data-pjax' => true],
+            'enableClientValidation' => false,
+            'enableAjaxValidation' => false,
+            'fieldConfig' => [
+                'template' => "<div class='survey-form-field submit-on-click'>{label}{input}\n{error}</div>",
+                'labelOptions' => ['class' => ''],
+            ],
+        ]);
+
+        echo $form->field($survey, "survey_is_closed")->checkbox(['class' => 'checkbox']);
+
+        echo Html::submitButton('ss', ['class' => 'hidden']);
+
+
+        ActiveForm::end();
+
+        Pjax::end();
 
         ?>
     </div>
@@ -92,7 +124,7 @@ echo Dialog::widget();
     echo Html::tag('div', Html::a('<i class="fa fa-plus" aria-hidden="true"></i> ' . Yii::t('survey', 'Add question'), Url::toRoute(['/survey/question/create', 'id' => $question->survey->survey_id]), ['class' => 'btn btn-success']),
         ['class' => 'text-center survey-btn', 'id' => '']);
     echo Html::tag('div', Html::submitButton('<i class="fa fa-floppy-o" aria-hidden="true"></i> ' . Yii::t('survey', 'Save'),
-        ['class' => 'btn btn-primary']), ['class' => 'text-center survey-btn']);
+        ['class' => 'btn btn-primary']), ['class' => 'text-center survey-btn', 'id' => 'done', 'data-action' => Url::toRoute(['/survey/default/view', 'id' => $survey->survey_id])]);
 
     Pjax::end(); ?>
 

@@ -312,3 +312,95 @@ $questionHeader: #374141;
     margin: 10px 0 10px 10px;
   }
 }
+
+#survey-index{
+  margin-top: 20px;
+  .summary{
+    margin: 15px 0;
+  }
+  .survey-card{
+    background: #fff;
+    padding: 10px;
+    box-shadow: 0 2px 11px rgba(0, 0, 0, 0.07);
+    margin-bottom: 10px;
+    max-width: 700px;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    position: relative;
+    transition: box-shadow .3s;
+    &:hover{
+      box-shadow: 1px 5px 11px rgba(0, 0, 0, 0.13);
+    }
+    .status{
+      width: 10px;
+      height: 10px;
+      background-color: #d8d8d8;
+      border-radius: 50%;
+      align-self: baseline;
+      position: absolute;
+      right: 8px;
+      &.active{
+        background-color: #88f367;
+      }
+      &.closed{
+        background-color: #ff6a6a;
+      }
+    }
+    .image{
+      display: inline-block;
+      vertical-align: middle;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #cecece;
+      color: #fff;
+      text-align: center;
+      line-height: 40px;
+      font-size: 20px;
+    }
+    .description{
+      display: flex;
+      flex-grow: 1;
+      justify-content: space-between;
+      vertical-align: middle;
+      .name{
+        margin: 0 10px;
+      }
+      .survey-labels{
+        margin-right: 10px;
+        .survey-label{
+          background-color: #607d8b;
+          color: #fff;
+          padding: 2px 5px;
+          border-radius: 15px;
+          min-width: 40px;
+          display: inline-block;
+          text-align: center;
+          margin: 0 5px;
+          &.respondents{
+            background-color: #9C27B0;
+          }
+        }
+      }
+    }
+  }
+  .pagination > .active > a, .pagination > .active > span, .pagination > .active > a:hover, .pagination > .active > span:hover, .pagination > .active > a:focus, .pagination > .active > span:focus {
+
+    background-color: #374141;
+    border: none;
+  }
+
+  .pagination > li > a, .pagination > li > span {
+    padding: 3px 10px;
+    border-radius: 4px;
+    border: none;
+    color: #607D8B;
+  }
+
+  .pagination>.active>a{
+    color: #fff;
+  }
+
+}
+
