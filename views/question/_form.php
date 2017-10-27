@@ -26,6 +26,8 @@ Pjax::begin([
     'enablePushState' => false,
     'timeout' => 0,
     'scrollTo' => false,
+    'options' => ['class' => 'survey-question-pjax-container'],
+   // 'reloadCss' => false,
     'clientOptions' => [
         'type' => 'post',
         'skipOuterContainers' => true,
@@ -34,8 +36,8 @@ Pjax::begin([
 
 $form = ActiveForm::begin([
     'id' => 'survey-questions-form-' . $question->survey_question_id,
-    'action' => Url::toRoute(['/survey/question/update-and-close', 'id' => $question->survey_question_id]),
-    'validationUrl' => Url::toRoute(['/survey/question/validate', 'id' => $question->survey_question_id]),
+    'action' => Url::toRoute(['question/update-and-close', 'id' => $question->survey_question_id]),
+    'validationUrl' => Url::toRoute(['question/validate', 'id' => $question->survey_question_id]),
     'options' => ['class' => 'form-inline', 'data-pjax' => true],
     'enableClientValidation' => false,
     'enableAjaxValidation' => true,
@@ -51,11 +53,11 @@ echo Html::beginTag('div', ['class' => 'survey-question-name-wrap']);
 
 echo $form->field($question, "[{$question->survey_question_id}]survey_question_name")->input('text')->label(false);
 
-echo Html::a(\Yii::t('survey', '<i class="fa fa-trash-o" aria-hidden="true"></i>'), Url::toRoute(['/survey/question/delete', 'id' => $question->survey_question_id]), [
+echo Html::a(\Yii::t('survey', '<i class="fa fa-trash-o" aria-hidden="true"></i>'), Url::toRoute(['question/delete', 'id' => $question->survey_question_id]), [
     'class' => 'btn btn-danger pull-right btn-delete',
 ]);
 echo Html::submitButton('<i class="fa fa-check" aria-hidden="true"></i>', ['class' => 'btn btn-success pull-right btn-save-question']);
-echo Html::submitButton('', ['class' => 'hidden update-question-btn survey-question-submit', 'data-action' => Url::toRoute(['/survey/question/update', 'id' => $question->survey_question_id])]);
+echo Html::submitButton('', ['class' => 'hidden update-question-btn survey-question-submit', 'data-action' => Url::toRoute(['question/update', 'id' => $question->survey_question_id])]);
 echo Html::endTag('div');
 
 $confirmMessage = \Yii::t('survey', 'Current types are not compatible, all entered data will be deleted. Are you sure?');
@@ -114,10 +116,10 @@ if ($question->survey_question_show_descr) {
             'lang' => 'ru',
             'minHeight' => 200,
             'toolbarFixed' => false,
-            'imageManagerJson' => Url::toRoute(['/survey/question/images-get']),
-            'imageUpload' => Url::toRoute(['/survey/question/image-upload']),
-            'fileManagerJson' => Url::toRoute(['/survey/question/files-get']),
-            'fileUpload' => Url::toRoute(['/survey/question/file-upload']),
+            'imageManagerJson' => Url::toRoute(['question/images-get']),
+            'imageUpload' => Url::toRoute(['question/image-upload']),
+            'fileManagerJson' => Url::toRoute(['question/files-get']),
+            'fileUpload' => Url::toRoute(['question/file-upload']),
             'plugins' => [
                 'imagemanager',
                 'video',

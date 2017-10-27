@@ -3,13 +3,23 @@
 namespace common\modules\survey\controllers;
 
 use common\modules\survey\models\search\SurveySearch;
+use common\modules\survey\models\search\SurveyStatSearch;
 use common\modules\survey\models\Survey;
 use common\modules\survey\models\SurveyAnswer;
 use common\modules\survey\models\SurveyQuestion;
+use common\modules\survey\models\SurveyStat;
+use common\modules\survey\SurveyInterface;
+use common\modules\survey\User;
 use yii\base\Model;
+use yii\base\UserException;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
+use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
+use yii\web\Response;
 
 /**
  * Default controller for the `survey` module
@@ -35,7 +45,8 @@ class DefaultController extends Controller
     public function actionView($id)
     {
         $survey = $this->findModel($id);
-        return $this->render('view', ['survey' => $survey]);
+        $respondentsCount = SurveyStat::find()->where(['survey_stat_survey_id' => $id])->count();
+        return $this->render('view', ['survey' => $survey, 'respondentsCount' => $respondentsCount]);
     }
 
     public function actionCreate()
@@ -47,14 +58,88 @@ class DefaultController extends Controller
         return $this->render('create', ['survey' => $survey]);
     }
 
+    public function actionRespondents($surveyId)
+    {
+        $searchModel = new SurveyStatSearch();
+        $dataProvider = $searchModel->search(\Yii::$app->request->queryParams);
+        $dataProvider->query->andWhere(['survey_stat_survey_id' => $surveyId])
+        ->orderBy(['survey_stat_assigned_at' => SORT_DESC]);
+
+        $dataProvider->pagination->pageSize = 10;
+
+        if (\Yii::$app->request->isPjax){
+            $dataProvider->pagination->route = Url::toRoute(['default/respondents']); ;
+            return $this->renderAjax('respondents',
+                compact('searchModel', 'dataProvider', 'surveyId'));
+        }
+
+        \Yii::$app->response->format = Response::FORMAT_JSON;
+
+        return [
+            'title' => "Assigned respondents",
+            'content' => $this->renderAjax('respondents',
+                compact('searchModel', 'dataProvider', 'surveyId')
+            ),
+            'footer' => Html::button('Close', ['class' => 'btn btn-default', 'data-dismiss' => "modal"])
+        ];
+    }
+
+    /**
+     * Returns user models founded by token
+     *
+     * @param $token string
+     * @param $surveyId
+     * @return User
+     */
+    public function actionGetRespondentsByToken($token, $surveyId)
+    {
+        $userClass = $this->module->userClass;
+        $userList = $userClass::actionGetRespondentsByToken($token);
+        $userList = ArrayHelper::index($userList, 'id');
+        $ids = ArrayHelper::getColumn($userList, 'id');
+        $assignedRespondents = SurveyStat::find()->where(['survey_stat_survey_id' => $surveyId])
+            ->andWhere(['survey_stat_user_id' => $ids])->asArray()->all();
+
+        foreach ($assignedRespondents as $item){
+            $userList[$item['survey_stat_user_id']]['isAssigned'] = true;
+        }
+
+        return json_encode($userList);
+
+    }
+
+    /**
+     * @param $surveyId
+     * @return bool
+     */
+    public function actionAssignUser($surveyId)
+    {
+        \Yii::$app->response->format = Response::FORMAT_JSON;
+        $userId = \Yii::$app->request->post('userId');
+
+        return SurveyStat::assignUser($userId, $surveyId);
+    }
+
+    /**
+     * @param $surveyId
+     * @return array|string
+     */
+    public function actionUnassignUser($surveyId)
+    {
+        $userId = \Yii::$app->request->post('userId');
+        SurveyStat::unassignUser($userId, $surveyId);
+
+        return $this->actionRespondents($surveyId);
+    }
+
     public function actionUpdate($id)
     {
 
         $survey = $this->findModel($id);
 
-        if (\Yii::$app->request->isPjax){
+        if (\Yii::$app->request->isPjax) {
             $post = \Yii::$app->request->post();
-            if ($survey->load($post) && $survey->validate()){
+            if ($survey->load($post) && $survey->validate()) {
                 $survey->save();
                 return $this->renderAjax('update', ['survey' => $survey]);
             }
@@ -99,4 +184,6 @@ class DefaultController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
+
 }

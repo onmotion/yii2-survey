@@ -13,11 +13,19 @@ use yii\helpers\Url;
 /** @var $question \common\modules\survey\models\SurveyQuestion */
 /** @var $form \yii\widgets\ActiveForm */
 
-//$form->field()
 foreach ($question->answers as $i => $answer) {
-
+    echo Html::checkbox('checkbox', false, ['class' => 'pseudo-checkbox']);
     echo $form->field($answer, "[$question->survey_question_id][$i]survey_answer_name")->input('text',
         ['placeholder' => \Yii::t('survey', 'Enter an answer choice')])->label(false);
+
+    if ($question->survey_question_is_scorable) {
+        echo Html::beginTag('div', ['class' => 'points-wrap']);
+        if ($i === 0) {
+            echo Html::tag('span', 'Баллы', ['class' => 'points-title']);
+        }
+        echo $form->field($answer, "[$question->survey_question_id][$i]survey_answer_points")->input('number')->label(false);
+        echo Html::endTag('div');
+    }
 
     echo Html::submitButton(\Yii::t('survey', '<i class="fa fa-plus" aria-hidden="true"></i>'), ['class' => 'btn btn-success btn-add-answer survey-question-submit',
         'data-action' => Url::toRoute(['question/add-answer', 'id' => $question->survey_question_id, 'after' => $i])]);

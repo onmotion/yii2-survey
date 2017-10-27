@@ -9,4 +9,4 @@
 /** @var $question \common\modules\survey\models\SurveyQuestion */
 /** @var $form \yii\widgets\ActiveForm */
 
-echo $this->render('/answers/' . $question->survey_question_type, ['question' => $question, 'form' => $form]);
+echo $this->render('@surveyRoot/views/widget/answers/' . $question->survey_question_type, ['question' => $question, 'form' => $form]);

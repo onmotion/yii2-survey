@@ -9,6 +9,7 @@
 use kartik\dialog\Dialog;
 use kartik\editable\Editable;
 use kartik\helpers\Html;
+use kartik\widgets\DatePicker;
 use wbraganca\dynamicform\DynamicFormWidget;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
@@ -35,7 +36,7 @@ echo Dialog::widget();
             'header' => 'Name',
             'size' => 'md',
             'formOptions' => [
-                'action' => Url::to(['/survey/default/update-editable', 'property' => 'survey_name'])
+                'action' => Url::toRoute(['default/update-editable', 'property' => 'survey_name'])
             ],
             'additionalData' => ['id' => $survey->survey_id],
             'options' => [
@@ -57,10 +58,15 @@ echo Dialog::widget();
             'size' => 'md',
             'inputType' => Editable::INPUT_DATETIME,
             'formOptions' => [
-                'action' => Url::to(['/survey/default/update-editable', 'property' => 'survey_expired_at'])
+                'action' => Url::toRoute(['default/update-editable', 'property' => 'survey_expired_at'])
             ],
             'additionalData' => ['id' => $survey->survey_id],
             'options' => [
+                'class' => Editable::INPUT_DATETIME,
+                'pluginOptions' => [
+                    'autoclose' => true,
+                   // 'format' => 'd.m.Y H:i'
+                ],
                 'options' => ['placeholder' => 'Expired at']
             ]
         ]);
@@ -78,7 +84,7 @@ echo Dialog::widget();
 
         $form = ActiveForm::begin([
             'id' => 'survey-form',
-            'action' => Url::toRoute(['/survey/default/update', 'id' => $survey->survey_id]),
+            'action' => Url::toRoute(['default/update', 'id' => $survey->survey_id]),
             'options' => ['class' => 'form-inline', 'data-pjax' => true],
             'enableClientValidation' => false,
             'enableAjaxValidation' => false,
@@ -121,10 +127,10 @@ echo Dialog::widget();
             'skipOuterContainers' => true,
         ]
     ]);
-    echo Html::tag('div', Html::a('<i class="fa fa-plus" aria-hidden="true"></i> ' . Yii::t('survey', 'Add question'), Url::toRoute(['/survey/question/create', 'id' => $question->survey->survey_id]), ['class' => 'btn btn-success']),
+    echo Html::tag('div', Html::a('<i class="fa fa-plus" aria-hidden="true"></i> ' . Yii::t('survey', 'Add question'), Url::toRoute(['question/create', 'id' => $survey->survey_id]), ['class' => 'btn btn-success']),
         ['class' => 'text-center survey-btn', 'id' => '']);
     echo Html::tag('div', Html::submitButton('<i class="fa fa-floppy-o" aria-hidden="true"></i> ' . Yii::t('survey', 'Save'),
-        ['class' => 'btn btn-primary']), ['class' => 'text-center survey-btn', 'id' => 'done', 'data-action' => Url::toRoute(['/survey/default/view', 'id' => $survey->survey_id])]);
+        ['class' => 'btn btn-primary']), ['class' => 'text-center survey-btn', 'id' => 'done', 'data-action' => Url::toRoute(['default/view', 'id' => $survey->survey_id])]);
 
     Pjax::end(); ?>
 

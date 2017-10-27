@@ -148,6 +148,6 @@ class SurveyQuestion extends \yii\db\ActiveRecord
      */
     public function getUserAnswers()
     {
-        return $this->hasMany(SurveyUserAnswer::className(), ['survey_user_answer_question_id' => 'survey_question_id']);
+        return $this->hasMany(SurveyUserAnswer::className(), ['survey_user_answer_question_id' => 'survey_question_id'])->indexBy('survey_user_answer_answer_id');
     }
 }

@@ -1,10 +1,10 @@
 ;(function ($) {
     "use strict";
-
     /**
      *
      */
     function Survey() {
+        var a = 1;
         $(document).on('pjax:end', function (e, contents, options) {
             if (e.target.id === 'survey-questions-append') {
                 let appendContainer = $('#survey-questions-append').find('.survey-question-pjax-container');
@@ -18,7 +18,7 @@
             event.preventDefault();
         });
 
-        $(document).on('click', '.survey-question-submit', function (e) {
+        $(document).on('click', '.survey-question-submit, .user-assign-submit', function (e) {
             e.preventDefault();
             let $this = $(this);
             let data = $this.data();
@@ -71,7 +71,6 @@
 
         function confirmForm(form) {
             return new Promise((resolve, reject) => {
-                console.log(form);
                 let container = form.closest('[data-pjax-container]');
                 form.submit();
                 container.on('afterValidate', function (event, messages, errorAttributes) {
@@ -122,22 +121,26 @@
             if ((e.target.id).indexOf('survey-questions-pjax-') !== -1) {
                 showProgress($('#' + e.target.id).find('.survey-block '));
             }
-
         });
 
         $(document).on('pjax:complete', function (e) {
-            if ((e.target.id).indexOf('survey-questions-pjax-') !== -1) {
+            if ((e.target.id).indexOf('survey-questions-pjax-') !== -1 || (e.target.id === 'survey-questions-append')) {
                 hideProgress($('#' + e.target.id));
             }
         });
     }
 
     $.fn['survey'] = function () {
-        return new Survey();
+        console.log('init');
+        if (!$.data(this, 'plugin_Survey')) {
+            return $.data(this, 'plugin_Survey',
+                new Survey());
+        }
     }
 
 })(window.jQuery);
 
 $(document).ready(function (e) {
     $.fn.survey();
+
 });

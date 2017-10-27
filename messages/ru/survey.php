@@ -32,6 +32,12 @@ return [
     'Current types are not compatible, all entered data will be deleted. Are you sure?' => 'Текущие типы несовместимы, все введенные данные будут удалены. Вы уверены?',
     'Label' => 'Заголовок',
 
+    'Error' => 'Ошибка',
+    'Complete' => 'Завершено',
+    'An error has occurred' => 'Ошибка',
+    'Operation completed successfully' => 'Операция завершена успешно',
+    'Select...' => 'Выбрать',
+
     'Multiple choice' => 'Множественный выбор',
     'One choise of list' => 'Один из списка',
     'Dropdown' => 'Выпадающий список',

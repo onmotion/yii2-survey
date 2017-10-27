@@ -3,6 +3,8 @@
 namespace common\modules\survey\models;
 
 use Yii;
+use yii\db\Expression;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "survey".
@@ -79,5 +81,13 @@ class Survey extends \yii\db\ActiveRecord
     public function setQuestions($val)
     {
         return $this->questions = $val;
+    }
+
+    static function getDropdownList()
+    {
+        return ArrayHelper::map(self::find()
+            ->where(['>', 'survey_expired_at', new Expression('NOW()')])
+            ->orderBy(['survey_created_at' => SORT_ASC])
+            ->asArray()->all(), 'survey_id', 'survey_name');
     }
 }

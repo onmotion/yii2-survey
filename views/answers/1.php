@@ -27,10 +27,10 @@ foreach ($question->answers as $i => $answer) {
         echo Html::endTag('div');
     }
 
-    echo Html::submitButton(\Yii::t('survey', '<i class="fa fa-plus" aria-hidden="true"></i>'), ['class' => 'btn btn-success btn-add-answer survey-question-submit',
-        'data-action' => Url::toRoute(['/survey/question/add-answer', 'id' => $question->survey_question_id, 'after' => $i])]);
-    echo Html::submitButton(\Yii::t('survey', '<i class="fa fa-minus" aria-hidden="true"></i>'), ['class' => 'btn btn-danger btn-delete-answer survey-question-submit',
-        'data-action' => Url::toRoute(['/survey/question/delete-answer', 'id' => $question->survey_question_id, 'answer' => $i]),
+    echo Html::submitButton('<i class="fa fa-plus" aria-hidden="true"></i>', ['class' => 'btn btn-success btn-add-answer survey-question-submit',
+        'data-action' => Url::toRoute(['question/add-answer', 'id' => $question->survey_question_id, 'after' => $i])]);
+    echo Html::submitButton('<i class="fa fa-minus" aria-hidden="true"></i>', ['class' => 'btn btn-danger btn-delete-answer survey-question-submit',
+        'data-action' => Url::toRoute(['question/delete-answer', 'id' => $question->survey_question_id, 'answer' => $i]),
         'name' => 'action', 'value' => 'delete-answer'
     ]);
 
@@ -46,10 +46,10 @@ foreach ($question->answers as $i => $answer) {
                 'lang' => 'ru',
                 'minHeight' => 100,
                 'toolbarFixed' => false,
-                'imageManagerJson' => Url::to(['/store/product/images-get']),
-                'imageUpload' => Url::to(['/store/product/image-upload']),
-                'fileManagerJson' => Url::to(['/store/product/files-get']),
-                'fileUpload' => Url::to(['/store/product/file-upload']),
+                'imageManagerJson' => Url::toRoute(['/store/product/images-get']),
+                'imageUpload' => Url::toRoute(['/store/product/image-upload']),
+                'fileManagerJson' => Url::toRoute(['/store/product/files-get']),
+                'fileUpload' => Url::toRoute(['/store/product/file-upload']),
                 'plugins' => [
                     'imagemanager',
                     'video',

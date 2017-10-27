@@ -38,10 +38,11 @@ class SurveyUserAnswer extends \yii\db\ActiveRecord
             [['survey_user_answer_id'], 'required'],
             [['survey_user_answer_id', 'survey_user_answer_user_id', 'survey_user_answer_survey_id', 'survey_user_answer_question_id', 'survey_user_answer_answer_id'], 'integer'],
             [['survey_user_answer_value'], 'string', 'max' => 255],
+            [['survey_user_answer_value'], 'default', 'value' => null],
             [['survey_user_answer_answer_id'], 'exist', 'skipOnError' => true, 'targetClass' => SurveyAnswer::className(), 'targetAttribute' => ['survey_user_answer_answer_id' => 'survey_answer_id']],
             [['survey_user_answer_question_id'], 'exist', 'skipOnError' => true, 'targetClass' => SurveyQuestion::className(), 'targetAttribute' => ['survey_user_answer_question_id' => 'survey_question_id']],
             [['survey_user_answer_survey_id'], 'exist', 'skipOnError' => true, 'targetClass' => Survey::className(), 'targetAttribute' => ['survey_user_answer_survey_id' => 'survey_id']],
-            [['survey_user_answer_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['survey_user_answer_user_id' => 'id']],
+            [['survey_user_answer_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => \Yii::$app->user->identityClass::className(), 'targetAttribute' => ['survey_user_answer_user_id' => 'id']],
         ];
     }
 

@@ -12,8 +12,8 @@ class Module extends \yii\base\Module
     /**
      * @inheritdoc
      */
-    public $controllerNamespace = 'common\modules\survey\controllers';
-
+    public $controllerNamespace = null;
+    public $userClass;
 
     public $params = [
         'uploadsUrl' => null,
@@ -25,14 +25,22 @@ class Module extends \yii\base\Module
      */
     public function init()
     {
+
+        $this->controllerNamespace = \Yii::$app->controllerNamespace === 'backend\controllers'
+            ? 'common\modules\survey\controllers'
+            : 'common\modules\survey\widgetControllers';
+
+
         parent::init();
 
-        if (empty($this->params['uploadsUrl'])){
+        if (empty($this->params['uploadsUrl'])) {
             throw new UserException("You must set uploadsUrl param in the config. Please see the documentation for more information.");
         }
-        if (empty($this->params['uploadsPath'])){
+        if (empty($this->params['uploadsPath'])) {
             throw new UserException("You must set uploadsPath param in the config. Please see the documentation for more information.");
         }
+
+        $this->userClass = \Yii::$app->user->identityClass;
 
         \Yii::setAlias('@surveyRoot', __DIR__);
 
