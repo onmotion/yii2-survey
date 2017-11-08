@@ -9,6 +9,10 @@
 namespace common\modules\survey;
 
 
+use common\modules\survey\models\SurveyStat;
+use yii\db\Exception;
+use yii\db\Expression;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 
 class Survey extends \yii\base\Widget
@@ -35,17 +39,54 @@ class Survey extends \yii\base\Widget
         return \Yii::getAlias('@surveyRoot/views');
     }
 
+    public function beforeRun()
+    {
+        $assignedModel = SurveyStat::getAssignedUserStat(\Yii::$app->user->getId(), $this->surveyId);
+        if (empty($assignedModel)) {
+            throw new ForbiddenHttpException();
+        }
+        return parent::beforeRun();
+    }
+
     public function run()
     {
         $view = $this->getView();
-        SurveyAsset::register($view);
-        $this->renderSurvey($this->surveyId);
+        SurveyWidgetAsset::register($view);
+
+        $survey = $this->findModel($this->surveyId);
+        $status = $survey->getStatus();
+        if ($status !== 'active') {
+            return $this->renderClosed();
+        }
+
+        $assignedModel = SurveyStat::getAssignedUserStat(\Yii::$app->user->getId(), $this->surveyId);
+        if (empty($assignedModel)) {
+            SurveyStat::assignUser(\Yii::$app->user->getId(), $this->surveyId);
+            $assignedModel = SurveyStat::getAssignedUserStat(\Yii::$app->user->getId(), $this->surveyId);
+        } else {
+//            if ($assignedModel->survey_stat_is_done){
+//                return $this->renderClosed();
+//            }
+        }
+
+
+        if ($assignedModel->survey_stat_started_at === null) {
+            $assignedModel->survey_stat_started_at = new Expression('NOW()');
+            $assignedModel->save(false);
+        }
+
+        return $this->renderSurvey($this->surveyId, $assignedModel);
     }
 
-    private function renderSurvey($id)
+    private function renderClosed()
+    {
+        echo $this->render('widget/default/closed');
+    }
+
+    private function renderSurvey($id, $stat)
     {
         $survey = $this->findModel($id);
-        echo $this->render('widget/default/index', ['survey' => $survey]);
+        echo $this->render('widget/default/index', ['survey' => $survey, 'stat' => $stat]);
     }
 
     protected function findModel($id)

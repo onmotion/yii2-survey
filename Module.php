@@ -3,6 +3,8 @@
 namespace common\modules\survey;
 
 use yii\base\UserException;
+use yii\helpers\FileHelper;
+use yii\helpers\Url;
 
 /**
  * survey module definition class
@@ -35,9 +37,13 @@ class Module extends \yii\base\Module
 
         if (empty($this->params['uploadsUrl'])) {
             throw new UserException("You must set uploadsUrl param in the config. Please see the documentation for more information.");
+        }else{
+            $this->params['uploadsUrl'] = rtrim($this->params['uploadsUrl'], '/');
         }
         if (empty($this->params['uploadsPath'])) {
             throw new UserException("You must set uploadsPath param in the config. Please see the documentation for more information.");
+        }else{
+            $this->params['uploadsPath'] = FileHelper::normalizePath($this->params['uploadsPath']);
         }
 
         $this->userClass = \Yii::$app->user->identityClass;

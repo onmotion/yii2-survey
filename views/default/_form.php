@@ -6,6 +6,7 @@
  * Time: 14:24
  */
 
+use common\modules\crop_image_widget\UploadCrop;
 use kartik\dialog\Dialog;
 use kartik\editable\Editable;
 use kartik\helpers\Html;
@@ -29,6 +30,39 @@ echo Dialog::widget();
 
         echo Html::beginTag('div', ['class' => 'survey-name-wrap']);
 
+        \yii\widgets\Pjax::begin([
+            'id' => 'form-photo-pjax',
+            'timeout' => 0,
+            'enablePushState' => false
+        ]);
+        $form = ActiveForm::begin([
+            'id' => 'survey-photo-form',
+            'action' => \yii\helpers\Url::toRoute(['default/update-image', 'id' => $survey->survey_id]),
+            'options' => ['class' => 'form-horizontal', 'data-pjax' => true],
+            //  'enableAjaxValidation' => true,
+        ]);
+
+        echo UploadCrop::widget([
+            'form' => $form,
+            'model' => $survey,
+            'attribute' => 'imageFile',
+            'enableClientValidation' => true,
+            'defaultPreviewImage' => $survey->getImage(),
+            'jcropOptions' => [
+                //  'dragMode' => 'none',
+                'viewMode' => 2,
+                'aspectRatio' => 1,
+                'autoCropArea' => 1,
+                'rotatable' => true,
+                'scalable' => true,
+                'zoomable' => true,
+                'toggleDragModeOnDblclick' => false
+            ]
+        ]);
+
+        ActiveForm::end();
+        \yii\widgets\Pjax::end();
+
         echo Editable::widget([
             'model' => $survey,
             'attribute' => 'survey_name',
@@ -49,6 +83,7 @@ echo Dialog::widget();
 
         echo Html::tag('br', '');
 
+        echo Html::beginTag('div', ['class' => 'col-md-6']);
         echo Html::label(Yii::t('survey', 'Expired at') . ': ', 'survey-survey_expired_at');
         echo Editable::widget([
             'model' => $survey,
@@ -65,11 +100,72 @@ echo Dialog::widget();
                 'class' => Editable::INPUT_DATETIME,
                 'pluginOptions' => [
                     'autoclose' => true,
-                   // 'format' => 'd.m.Y H:i'
+                    // 'format' => 'd.m.Y H:i'
                 ],
                 'options' => ['placeholder' => 'Expired at']
             ]
         ]);
+
+        echo Html::tag('div', '', ['class' => 'clearfix']);
+        echo Html::label(Yii::t('survey', 'Time to pass') . ': ', 'survey-survey_time_to_pass');
+        echo Editable::widget([
+            'model' => $survey,
+            'attribute' => 'survey_time_to_pass',
+            'asPopover' => true,
+            'header' => 'Time to pass',
+            'size' => 'md',
+            'formOptions' => [
+                'action' => Url::toRoute(['default/update-editable', 'property' => 'survey_time_to_pass'])
+            ],
+            'additionalData' => ['id' => $survey->survey_id],
+            'options' => [
+                'class' => 'form-control',
+                'placeholder' => 'Enter time in minutes...',
+                'type' => 'number',
+            ]
+        ]);
+        echo Html::label(Yii::t('survey', 'minutes'));
+
+        echo Html::endTag('div');
+
+        echo Html::beginTag('div', ['class' => 'col-md-6']);
+        echo Html::label(Yii::t('survey', 'Wallet Price') . ': ', 'survey-survey_wallet');
+        echo Editable::widget([
+            'model' => $survey,
+            'attribute' => 'survey_wallet',
+            'asPopover' => true,
+            'header' => 'Price',
+            'size' => 'md',
+            'formOptions' => [
+                'action' => Url::toRoute(['default/update-editable', 'property' => 'survey_wallet'])
+            ],
+            'additionalData' => ['id' => $survey->survey_id],
+            'options' => [
+                'class' => 'form-control',
+                'placeholder' => 'Enter survey price...',
+                'type' => 'number',
+            ]
+        ]);
+        echo Html::label(Yii::t('survey', 'Status Price') . ': ', 'survey-survey_status');
+        echo Editable::widget([
+            'model' => $survey,
+            'attribute' => 'survey_status',
+            'asPopover' => true,
+            'header' => 'Price',
+            'size' => 'md',
+            'formOptions' => [
+                'action' => Url::toRoute(['default/update-editable', 'property' => 'survey_status'])
+            ],
+            'additionalData' => ['id' => $survey->survey_id],
+            'options' => [
+                'class' => 'form-control',
+                'placeholder' => 'Enter survey price...',
+                'type' => 'number',
+            ]
+        ]);
+
+        echo Html::endTag('div');
+        echo Html::tag('div', '', ['class' => 'clearfix']);
 
         Pjax::begin([
             'id' => 'survey-pjax',
@@ -89,15 +185,34 @@ echo Dialog::widget();
             'enableClientValidation' => false,
             'enableAjaxValidation' => false,
             'fieldConfig' => [
-                'template' => "<div class='survey-form-field submit-on-click'>{label}{input}\n{error}</div>",
+                'template' => "<div class='survey-form-field'>{label}{input}\n{error}</div>",
                 'labelOptions' => ['class' => ''],
             ],
         ]);
 
-        echo $form->field($survey, "survey_is_closed")->checkbox(['class' => 'checkbox']);
+        echo Html::beginTag('div', ['class' => 'col-md-12']);
+        echo $form->field($survey, "survey_descr", ['template' => "<div class='survey-form-field'>{label}{input}</div>",]
+        )->textarea(['rows' => 3]);
+        echo Html::tag('div', '', ['class' => 'clearfix']);
+        echo Html::endTag('div');
 
-        echo Html::submitButton('ss', ['class' => 'hidden']);
 
+        echo Html::beginTag('div', ['class' => 'col-md-6']);
+        echo $form->field($survey, "survey_is_closed", ['template' => "<div class='survey-form-field submit-on-click'>{input}{label}</div>",]
+        )->checkbox(['class' => 'checkbox danger'], false);
+        echo Html::tag('div', '', ['class' => 'clearfix']);
+        echo $form->field($survey, "survey_is_pinned", ['template' => "<div class='survey-form-field submit-on-click'>{input}{label}</div>",]
+        )->checkbox(['class' => 'checkbox'], false);
+        echo Html::endTag('div');
+
+        echo Html::beginTag('div', ['class' => 'col-md-6']);
+        echo $form->field($survey, "survey_tags")->input('text', ['placeholder' => 'Comma separated']);
+
+        echo Html::endTag('div');
+
+
+        echo Html::submitButton('', ['class' => 'hidden']);
+        echo Html::tag('div', '', ['class' => 'clearfix']);
 
         ActiveForm::end();
 
@@ -130,9 +245,33 @@ echo Dialog::widget();
     echo Html::tag('div', Html::a('<i class="fa fa-plus" aria-hidden="true"></i> ' . Yii::t('survey', 'Add question'), Url::toRoute(['question/create', 'id' => $survey->survey_id]), ['class' => 'btn btn-success']),
         ['class' => 'text-center survey-btn', 'id' => '']);
     echo Html::tag('div', Html::submitButton('<i class="fa fa-floppy-o" aria-hidden="true"></i> ' . Yii::t('survey', 'Save'),
-        ['class' => 'btn btn-primary']), ['class' => 'text-center survey-btn', 'id' => 'done', 'data-action' => Url::toRoute(['default/view', 'id' => $survey->survey_id])]);
+        ['class' => 'btn btn-primary', 'data-default-text' => '<i class="fa fa-floppy-o" aria-hidden="true"></i> ' . Yii::t('survey', 'Save')]), ['class' => 'text-center survey-btn', 'id' => 'save', 'data-action' => Url::toRoute(['default/view', 'id' => $survey->survey_id])]);
 
     Pjax::end(); ?>
 
 
 </div>
+
+<?php
+$this->registerJs(<<<JS
+$(document).ready(function(e) {
+  $(document).on('cropready', function() {
+    $('#survey-photo-form').submit();
+  });
+});
+JS
+);
+
+$this->registerCss(<<<CSS
+.modal-backdrop.in{
+display: none;
+}
+CSS
+);
+
+$this->registerJs(<<<JS
+$(document).ready(function (e) {
+    $.fn.survey();
+});
+JS
+);

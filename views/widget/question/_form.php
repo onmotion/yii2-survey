@@ -31,16 +31,19 @@ Pjax::begin([
     'clientOptions' => [
         'type' => 'post',
         'skipOuterContainers' => true,
+       // 'async' => false,
     ]
 ]);
 
 $form = ActiveForm::begin([
     'id' => 'survey-questions-form-' . $question->survey_question_id,
-    'action' => Url::toRoute(['/survey/question/submit-answer', 'id' => $question->survey_question_id]),
+    'action' => Url::toRoute(['/survey/question/submit-answer', 'id' => $question->survey_question_id, 'n' => $number]),
     'validationUrl' => Url::toRoute(['/survey/question/validate', 'id' => $question->survey_question_id]),
-    'options' => ['class' => 'form-inline', 'data-pjax' => true],
+    'options' => ['class' => 'form-inline question-form', 'data-pjax' => true],
     'enableClientValidation' => false,
     'enableAjaxValidation' => true,
+    'validateOnBlur' => false,
+    'validateOnSubmit' => true,
     'fieldConfig' => [
         'template' => "<div class='survey-questions-form-field'>{label}{input}\n{error}</div>",
         'labelOptions' => ['class' => ''],
@@ -53,9 +56,11 @@ echo Html::beginTag('div', ['class' => 'survey-question-name-wrap']);
 echo Html::tag('h4', ($number + 1) . '. ' . $question->survey_question_name);
 echo Html::endTag('div');
 
-echo Html::beginTag('div', ['class' => 'survey-question-descr-wrap']);
-echo $question->survey_question_descr;
-echo Html::endTag('div');
+if ($question->survey_question_show_descr) {
+    echo Html::beginTag('div', ['class' => 'survey-question-descr-wrap']);
+    echo $question->survey_question_descr;
+    echo Html::endTag('div');
+}
 
 
 echo Html::beginTag('div', ['class' => 'answers-container', 'id' => 'survey-answers-' . $question->survey_question_id]);
@@ -65,7 +70,9 @@ if (isset($question->survey_question_type)) {
 
 echo Html::endTag('div');
 
-echo Html::tag('hr', '');
+echo Html::tag('div', Html::submitButton('DONE', ['class' => 'btn btn-primary btn-submit hidden animated']), ['class' => 'card-footer']);
+
+//echo $form->errorSummary([$question]);
 
 ?>
     <div class="preloader">

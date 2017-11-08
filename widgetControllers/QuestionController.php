@@ -5,6 +5,7 @@ namespace common\modules\survey\widgetControllers;
 use common\modules\survey\models\Survey;
 use common\modules\survey\models\SurveyAnswer;
 use common\modules\survey\models\SurveyQuestion;
+use common\modules\survey\models\SurveyStat;
 use common\modules\survey\models\SurveyType;
 use common\modules\survey\models\SurveyUserAnswer;
 use kartik\widgets\ActiveForm;
@@ -27,22 +28,32 @@ use yii\web\Response;
 class QuestionController extends Controller
 {
 
-
-    public function actionValidate($id)
+    /**
+     * @param $question SurveyQuestion
+     * @return array|bool
+     */
+    protected function validate(&$question)
     {
-        $question = $this->findModel($id);
+
+        $stat = SurveyStat::getAssignedUserStat(\Yii::$app->user->getId(), $question->survey->survey_id);
+        //не работаем с завершенными опросами
+        if ($stat->survey_stat_is_done) {
+            return false;
+        }
         $post = \Yii::$app->request->post();
-        $action = ArrayHelper::getValue($post, "action");
+
         $result = [];
+
         \Yii::$app->response->format = Response::FORMAT_JSON;
 
         $answersData = ArrayHelper::getValue($post, "SurveyUserAnswer.{$question->survey_question_id}");
-
         $userAnswers = $question->userAnswers;
 
         if (!empty($answersData)) {
             if ($question->survey_question_type === SurveyType::TYPE_MULTIPLE
                 || $question->survey_question_type === SurveyType::TYPE_RANKING
+                || $question->survey_question_type === SurveyType::TYPE_MULTIPLE_TEXTBOX
+                || $question->survey_question_type === SurveyType::TYPE_DATE_TIME
             ) {
                 foreach ($question->answers as $i => $answer) {
                     $userAnswer = isset($userAnswers[$answer->survey_answer_id]) ? $userAnswers[$answer->survey_answer_id] : (new SurveyUserAnswer([
@@ -59,8 +70,18 @@ class QuestionController extends Controller
                         $userAnswer->save(false);
                     }
                 }
+                $question->refresh();
+                $question->validateMultipleAnswer();
+                foreach ($question->userAnswers as $userAnswer) {
+                    foreach ($userAnswer->getErrors() as $attribute => $errors) {
+                        $result["surveyuseranswer-{$question->survey_question_id}-{$userAnswer->survey_user_answer_answer_id}-{$attribute}"] = $errors;
+                    }
+                }
             } elseif ($question->survey_question_type === SurveyType::TYPE_ONE_OF_LIST
                 || $question->survey_question_type === SurveyType::TYPE_DROPDOWN
+                || $question->survey_question_type === SurveyType::TYPE_SLIDER
+                || $question->survey_question_type === SurveyType::TYPE_SINGLE_TEXTBOX
+                || $question->survey_question_type === SurveyType::TYPE_COMMENT_BOX
             ) {
                 $userAnswer = !empty(current($userAnswers)) ? current($userAnswers) : (new SurveyUserAnswer([
                     'survey_user_answer_user_id' => \Yii::$app->user->getId(),
@@ -78,6 +99,20 @@ class QuestionController extends Controller
         }
 
         return $result;
+    }
+
+    public function actionValidate($id)
+    {
+        $question = $this->findModel($id);
+        return $this->validate($question);
+    }
+
+    public function actionSubmitAnswer($id, $n)
+    {
+        $question = $this->findModel($id);
+        $this->validate($question);
+
+        return $this->renderAjax('@surveyRoot/views/widget/question/_form', ['question' => $question, 'number' => $n]);
     }
 
 

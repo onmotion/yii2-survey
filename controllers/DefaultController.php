@@ -10,16 +10,23 @@ use common\modules\survey\models\SurveyQuestion;
 use common\modules\survey\models\SurveyStat;
 use common\modules\survey\SurveyInterface;
 use common\modules\survey\User;
+
+use Imagine\Image\Box;
+use Yii;
 use yii\base\Model;
 use yii\base\UserException;
 use yii\helpers\ArrayHelper;
+use yii\helpers\FileHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\imagine\Image;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
+use yii\web\UploadedFile;
+use yii\widgets\ActiveForm;
 
 /**
  * Default controller for the `survey` module
@@ -42,18 +49,40 @@ class DefaultController extends Controller
         ]);
     }
 
+    public function actionDelete($id)
+    {
+
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $survey = $this->findModel($id);
+        if ($survey->delete()) {
+            $basepath = $this->module->params['uploadsPath'];
+            $path = \Yii::getAlias($basepath) . '/' . $id;
+            FileHelper::removeDirectory($path);
+        }
+        return ['forceClose' => true, 'forceReload' => '#survey-index-pjax'];
+    }
+
     public function actionView($id)
     {
         $survey = $this->findModel($id);
-        $respondentsCount = SurveyStat::find()->where(['survey_stat_survey_id' => $id])->count();
-        return $this->render('view', ['survey' => $survey, 'respondentsCount' => $respondentsCount]);
+
+        $searchModel = new SurveyStatSearch();
+        $dataProvider = $searchModel->search(\Yii::$app->request->queryParams);
+        $dataProvider->query->andWhere(['survey_stat_survey_id' => $survey->survey_id])
+            ->orderBy(['survey_stat_assigned_at' => SORT_DESC]);
+
+        $dataProvider->pagination->pageSize = 10;
+
+        return $this->render('view', ['survey' => $survey, 'searchModel' => $searchModel, 'dataProvider' => $dataProvider]);
     }
 
     public function actionCreate()
     {
         $survey = new Survey();
         $survey->survey_name = \Yii::t('survey', 'New Survey');
+        $survey->survey_is_closed = true;
         $survey->save(false);
+        \Yii::$app->session->set('surveyUploadsSubpath', $survey->survey_id);
 
         return $this->render('create', ['survey' => $survey]);
     }
@@ -63,12 +92,12 @@ class DefaultController extends Controller
         $searchModel = new SurveyStatSearch();
         $dataProvider = $searchModel->search(\Yii::$app->request->queryParams);
         $dataProvider->query->andWhere(['survey_stat_survey_id' => $surveyId])
-        ->orderBy(['survey_stat_assigned_at' => SORT_DESC]);
+            ->orderBy(['survey_stat_assigned_at' => SORT_DESC]);
 
         $dataProvider->pagination->pageSize = 10;
 
-        if (\Yii::$app->request->isPjax){
-            $dataProvider->pagination->route = Url::toRoute(['default/respondents']); ;
+        if (\Yii::$app->request->isPjax) {
+            $dataProvider->pagination->route = Url::toRoute(['default/respondents']);
             return $this->renderAjax('respondents',
                 compact('searchModel', 'dataProvider', 'surveyId'));
         }
@@ -100,7 +129,7 @@ class DefaultController extends Controller
         $assignedRespondents = SurveyStat::find()->where(['survey_stat_survey_id' => $surveyId])
             ->andWhere(['survey_stat_user_id' => $ids])->asArray()->all();
 
-        foreach ($assignedRespondents as $item){
+        foreach ($assignedRespondents as $item) {
             $userList[$item['survey_stat_user_id']]['isAssigned'] = true;
         }
 
@@ -136,6 +165,7 @@ class DefaultController extends Controller
     {
 
         $survey = $this->findModel($id);
+        \Yii::$app->session->set('surveyUploadsSubpath', $id);
 
         if (\Yii::$app->request->isPjax) {
             $post = \Yii::$app->request->post();
@@ -174,6 +204,69 @@ class DefaultController extends Controller
         }
 
         throw new BadRequestHttpException();
+    }
+
+    public function actionUpdateImage($id)
+    {
+        $model = $this->findModel($id);
+        $model['imageFile'] = UploadedFile::getInstance($model, 'imageFile');
+
+        $validate = ActiveForm::validate($model);
+        if (\Yii::$app->request->isAjax && !empty($validate)) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return $validate;
+        }
+
+        if (Yii::$app->request->isPost && $model->validate()) {
+            $imageFile = ArrayHelper::getValue($model, 'imageFile');
+            if (!empty($imageFile)) {
+                $subpath = \Yii::$app->session->get('surveyUploadsSubpath', '');
+                $name = $subpath . '/' . uniqid() . '.' . pathinfo($imageFile->name, PATHINFO_EXTENSION);
+                $cropInfo = json_decode(Yii::$app->request->post('imageFile_data'), true);
+                try {
+                    $tmpimg = Image::autorotate($imageFile->tempName);
+                    if ($cropInfo['x'] < 0) $cropInfo['x'] = 0;
+                    if ($cropInfo['y'] < 0) $cropInfo['y'] = 0;
+                    $image = Image::crop(
+                        $tmpimg,
+                        intval($cropInfo['width']),
+                        intval($cropInfo['height']),
+                        [$cropInfo['x'], $cropInfo['y']]
+                    )->resize(
+                        new Box(400, 400)
+                    );
+
+                } catch (\Exception $e) {
+                    Yii::$app->session->setFlash("error", $e->getMessage());
+                }
+
+                //upload and save db
+
+                $basepath = $this->module->params['uploadsPath'];
+                $path = \Yii::getAlias($basepath) . '/' . $name;
+                $path = FileHelper::normalizePath($path);
+                FileHelper::createDirectory(\Yii::getAlias($basepath) . '/' . $subpath);
+                if (isset($image) && $image->save($path, ['png_compression_level' => 5, 'jpeg_quality' => 90])) {
+                    $oldPath = \Yii::getAlias($basepath) . '/' . $model->survey_image;
+                    $oldPath = FileHelper::normalizePath($oldPath);
+                    if (!empty($model->survey_image) && file_exists($oldPath)) {
+                        unlink($oldPath);
+                    }
+                    $model->survey_image = $name;
+                    $model->save();
+                } else {
+                    Yii::$app->session->setFlash("warning", 'Ошибка загрузки изображения.');
+                }
+            }
+            return $this->renderPartial('update', ['survey' => $model]);
+
+        } else {
+            if ($model->hasErrors()) {
+                Yii::$app->session->setFlash("error", "Ошибка сохранения " . current($model->getFirstErrors()));
+            }
+        }
+
+        return true;
     }
 
     protected function findModel($id)

@@ -45,7 +45,7 @@ class SurveyStatSearch extends SurveyStat
         $query = SurveyStat::find();
 
         $dataProvider = new ActiveDataProvider([
-            'query' => $query,
+            'query' => $query->joinWith('survey'),
         ]);
 
         $this->load($params);

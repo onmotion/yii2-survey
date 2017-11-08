@@ -32,9 +32,12 @@ foreach ($question->answers as $i => $answer) {
     $label .= '</div>';
 
     echo Html::beginTag('div', ['class' => 'answer-item']);
-    echo $label;
-    echo Html::tag('div', $form->field($userAnswer, "[$question->survey_question_id][$answer->survey_answer_id]survey_user_answer_value")
+
+    echo Html::tag('div', $form->field($userAnswer, "[$question->survey_question_id][$answer->survey_answer_id]survey_user_answer_value",[
+        'template' => "{input}{label}\n{hint}\n{error}",
+    ])
         ->dropDownList($ddList, ['encode' => false, 'prompt' => \Yii::t('survey', 'Select...')])->label(false));
+    echo $label;
     echo Html::endTag('div');
 
  //   echo Html::tag('br', '');

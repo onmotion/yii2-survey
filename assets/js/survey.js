@@ -4,8 +4,9 @@
      *
      */
     function Survey() {
-        var a = 1;
+
         $(document).on('pjax:end', function (e, contents, options) {
+            console.log(e);
             if (e.target.id === 'survey-questions-append') {
                 let appendContainer = $('#survey-questions-append').find('.survey-question-pjax-container');
                 appendContainer.appendTo('#survey-questions');
@@ -18,18 +19,27 @@
             event.preventDefault();
         });
 
-        $(document).on('click', '.survey-question-submit, .user-assign-submit', function (e) {
+        $(document).on('pjax:error', function (event, xhr, textStatus, error, options) {
+            console.log(event);
+            event.preventDefault();
+        });
+
+
+        $(document).on('click', '.survey-question-submit, .user-assign-submit', pseudoSubmit);
+
+        function pseudoSubmit(e) {
             e.preventDefault();
             let $this = $(this);
             let data = $this.data();
             let action = data.action;
             let $form = $this.closest('form');
+            console.log($form);
             if ($form && action) {
                 $form.attr('action', action).submit();
             } else {
                 console.log('Error');
             }
-        });
+        }
 
         $(document).on('click', '.checkbox-updatable', function (e) {
             let container = $(this).closest('[data-pjax-container]');
@@ -44,8 +54,13 @@
 
         async function submitAllForms() {
             let forms = [];
-            $(this).prop('disabled', true);
-            var allFormsIsValid = true;
+            let $body =  $('body');
+            $body.toggleClass('survey-loading');
+            let btn = $(this).find('button');
+            btn.prop('disabled', true);
+            let defaultText = btn.data('default-text') || '';
+            btn.html('<i class="fa fa-spinner fa-pulse fa-fw" aria-hidden="true"></i>');
+            let allFormsIsValid = true;
 
             $(document).find('form.form-inline').each(function (i, el) {
                 forms.push($(el));
@@ -59,14 +74,26 @@
                 }
             }
 
-            $(this).prop('disabled', false);
-
             if (allFormsIsValid) {
-                location.href = $('#done').data('action');
+                location.href = $('#save').data('action');
+            }else {
+                btn.prop('disabled', false);
+                btn.html(defaultText);
+                $body.toggleClass('survey-loading');
             }
         }
 
-        $(document).on('click', '#done', submitAllForms);
+        $(document).on('click', '#save', submitAllForms);
+
+        $(document).on('click', '.close-btn', function (e) {
+            $(this).parent().toggleClass('opened');
+            $('body').toggleClass('modal-open');
+        });
+
+        $(document).on('click', '.respondents-toggle', function (e) {
+            $('#respondents-modal').toggleClass('opened');
+            $('body').toggleClass('modal-open');
+        });
 
 
         function confirmForm(form) {
@@ -131,7 +158,7 @@
     }
 
     $.fn['survey'] = function () {
-        console.log('init');
+        console.log('survey init');
         if (!$.data(this, 'plugin_Survey')) {
             return $.data(this, 'plugin_Survey',
                 new Survey());
@@ -139,8 +166,3 @@
     }
 
 })(window.jQuery);
-
-$(document).ready(function (e) {
-    $.fn.survey();
-
-});

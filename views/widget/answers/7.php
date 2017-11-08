@@ -14,11 +14,13 @@ use yii\helpers\Url;
 /** @var $question \common\modules\survey\models\SurveyQuestion */
 /** @var $form \yii\widgets\ActiveForm */
 
-echo Html::beginTag('div', ['class' => 'answers-stat']);
+$userAnswers = $question->userAnswers;
+
 foreach ($question->answers as $i => $answer) {
-    $average = $answer->getTotalUserAnswersCount();
-    $average = $average > 0 ? $average : 0;
-    echo Html::label($answer->survey_answer_name) . ' - ' . "average <b>$average</b>";
+    $userAnswer = $userAnswers[$answer->survey_answer_id] ?? (new SurveyUserAnswer());
+
+    echo $form->field($userAnswer, "[$question->survey_question_id][$answer->survey_answer_id]survey_user_answer_value")->input('text',
+        ['placeholder' => \Yii::t('survey', 'Enter your answer here')])->label($answer->survey_answer_name);
+
     echo Html::tag('br', '');
 }
-echo Html::endTag('div');

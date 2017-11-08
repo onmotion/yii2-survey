@@ -2,28 +2,42 @@
 
 namespace common\modules\survey\models;
 
+use common\modules\survey\Module;
+use himiklab\thumbnail\EasyThumbnailImage;
 use Yii;
 use yii\db\Expression;
 use yii\helpers\ArrayHelper;
+use yii\helpers\FileHelper;
+use yii\helpers\Url;
+use yii\web\UrlManager;
 
 /**
  * This is the model class for table "survey".
  *
  * @property integer $survey_id
+ * @property integer $survey_created_by
  * @property string $survey_name
  * @property string $survey_created_at
  * @property string $survey_updated_at
  * @property string $survey_expired_at
  * @property boolean $survey_is_pinned
  * @property boolean $survey_is_closed
+ * @property integer $survey_wallet
+ * @property integer $survey_status
+ * @property integer $survey_time_to_pass
+ * @property string $survey_tags
+ * @property string $survey_image
+ * @property string $survey_descr
  *
  * @property SurveyUserAnswer[] $surveyUserAnswers
  * @property SurveyQuestion[] $questions
+ * @property SurveyStat[] $stats
  */
 class Survey extends \yii\db\ActiveRecord
 {
 
     public $question = null;
+    public $imageFile = null;
 
     /**
      * @inheritdoc
@@ -31,6 +45,14 @@ class Survey extends \yii\db\ActiveRecord
     public static function tableName()
     {
         return 'survey';
+    }
+
+    public function beforeSave($insert)
+    {
+        if ($insert){
+            $this->survey_created_by = \Yii::$app->user->getId();
+        }
+        return parent::beforeSave($insert);
     }
 
     /**
@@ -42,7 +64,11 @@ class Survey extends \yii\db\ActiveRecord
             [['survey_created_at', 'survey_updated_at', 'survey_expired_at'], 'safe'],
             [['survey_is_pinned', 'survey_is_closed'], 'boolean'],
             [['survey_name'], 'string', 'max' => 45],
+            [['survey_descr'], 'string'],
+            [['survey_tags', 'survey_image'], 'string', 'max' => 255],
             [['survey_name'], 'required'],
+            [['survey_wallet', 'survey_status', 'survey_created_by', 'survey_time_to_pass'], 'integer'],
+            [['imageFile'], 'file', 'mimeTypes' => 'image/jpeg, image/png', 'maxSize' => 5000000],
         ];
     }
 
@@ -57,8 +83,12 @@ class Survey extends \yii\db\ActiveRecord
             'survey_created_at' => Yii::t('survey', 'Created at'),
             'survey_updated_at' => Yii::t('survey', 'Updated at'),
             'survey_expired_at' => Yii::t('survey', 'Expired at'),
-            'survey_is_pinned' => Yii::t('survey', 'Is Pinned'),
-            'survey_is_closed' => Yii::t('survey', 'Is Closed'),
+            'survey_is_pinned' => Yii::t('survey', 'Pinned'),
+            'survey_is_closed' => Yii::t('survey', 'Closed'),
+            'survey_wallet' => Yii::t('survey', 'Price'),
+            'survey_tags' => Yii::t('survey', 'Tags'),
+            'survey_descr' => Yii::t('survey', 'Description'),
+            'survey_time_to_pass' => Yii::t('survey', 'Time to pass'),
         ];
     }
 
@@ -67,7 +97,7 @@ class Survey extends \yii\db\ActiveRecord
      */
     public function getSurveyUserAnswers()
     {
-        return $this->hasMany(SurveyUserAnswer::className(), ['survey_user_answer_survey_id' => 'survey_id']);
+        return $this->hasOne(SurveyUserAnswer::className(), ['survey_user_answer_survey_id' => 'survey_id']);
     }
 
     /**
@@ -78,16 +108,58 @@ class Survey extends \yii\db\ActiveRecord
         return $this->hasMany(SurveyQuestion::className(), ['survey_question_survey_id' => 'survey_id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getStats()
+    {
+        return $this->hasMany(SurveyStat::className(), ['survey_stat_survey_id' => 'survey_id']);
+    }
+
+    public function getStatus()
+    {
+        if (isset($this->survey_expired_at) && strtotime($this->survey_expired_at) < time()){
+            $status = 'expired';
+        }else{
+            $status = $this->survey_is_closed ? 'closed' : 'active';
+        }
+        return $status;
+    }
+
     public function setQuestions($val)
     {
         return $this->questions = $val;
     }
 
+    public function getRespondentsCount()
+    {
+        return SurveyStat::find()->where(['survey_stat_survey_id' => $this->survey_id])->count();
+    }
+
     static function getDropdownList()
     {
         return ArrayHelper::map(self::find()
-            ->where(['>', 'survey_expired_at', new Expression('NOW()')])
+            ->where(['or', ['>', 'survey_expired_at', new Expression('NOW()')], ['survey_expired_at' => null]])
             ->orderBy(['survey_created_at' => SORT_ASC])
             ->asArray()->all(), 'survey_id', 'survey_name');
+    }
+
+    /**
+     * @param array $size
+     * @param int $quality
+     * @return string
+     */
+    public function getImage()
+    {
+        $file = !empty($this->survey_image) ? $this->survey_image : null;
+
+        if(empty($file)){
+            return null;
+        }
+        $module = \Yii::$app->modules['survey'];
+        $basepath = $module->params['uploadsUrl'];
+        $path = $basepath . '/' . $this->survey_image;
+
+        return $path;
     }
 }

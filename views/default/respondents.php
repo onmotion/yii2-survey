@@ -81,14 +81,15 @@ JS
         'id' => 'survey-respondents-pjax',
         'enableReplaceState' => false,
         'enablePushState' => false,
+        'timeout' => 0,
         'clientOptions' => [
-            'timeout' => 0
+         //   'async' => false
         ],
     ]);
 
     ActiveForm::begin([
         'id' => 'survey-respondents-form',
-        'action' => '/',
+        'action' => Url::toRoute(['default/unassign-user', 'surveyId' => $surveyId]),
         'enableClientValidation' => false,
         'enableAjaxValidation' => false,
         'options' => ['data-pjax' => true],
@@ -113,7 +114,8 @@ JS
             </div>
             <div class="buttons">
                 <?php
-                echo Html::submitButton(\Yii::t('survey', '<i class="fa fa-trash" aria-hidden="true"></i>'), ['class' => 'btn btn-danger btn-delete-assigned-user user-assign-submit',
+                echo Html::submitButton(\Yii::t('survey', '<i class="fa fa-trash" aria-hidden="true"></i>'),
+                    ['class' => 'btn btn-danger btn-delete-assigned-user user-assign-submit',
                     'data-action' => Url::toRoute(['default/unassign-user', 'surveyId' => $surveyId]),
                     'name' => 'userId', 'value' => $surveyStat->survey_stat_user_id
                 ]);

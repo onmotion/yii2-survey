@@ -11,7 +11,7 @@ namespace common\modules\survey;
 
 use yii\web\AssetBundle;
 
-class SurveyAsset extends AssetBundle
+class SurveyWidgetAsset extends AssetBundle
 {
 
     public function init()
@@ -21,7 +21,7 @@ class SurveyAsset extends AssetBundle
     }
 
     public $publishOptions = [
-       // 'forceCopy' => true //dev
+        'forceCopy' => true //dev
     ];
 
     public $css = [
@@ -30,6 +30,7 @@ class SurveyAsset extends AssetBundle
     ];
     public $js = [
         'js/survey.js',
+        'js/survey.widget.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

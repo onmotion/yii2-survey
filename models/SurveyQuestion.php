@@ -2,7 +2,10 @@
 
 namespace common\modules\survey\models;
 
+
 use Yii;
+use yii\base\Exception;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "survey_question".
@@ -30,6 +33,24 @@ class SurveyQuestion extends \yii\db\ActiveRecord
     public static function tableName()
     {
         return 'survey_question';
+    }
+
+    public function validateMultipleAnswer()
+    {
+        $question = $this;
+        $userAnswers = $question->userAnswers;
+        if (!$question->survey_question_can_skip){
+            if ($question->survey_question_type === SurveyType::TYPE_MULTIPLE){
+                $answerValues = ArrayHelper::getColumn($userAnswers, 'survey_user_answer_value');
+                if (!in_array("1", $answerValues)){
+                    $answer = (array)$question->userAnswers;
+                    if(!empty($answer)) {
+                        end($answer)->addError('survey_user_answer_value', \Yii::t('survey', 'You must enter an answer'));
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     public function changeDefaultValuesOnTypeChange(){
@@ -148,6 +169,35 @@ class SurveyQuestion extends \yii\db\ActiveRecord
      */
     public function getUserAnswers()
     {
-        return $this->hasMany(SurveyUserAnswer::className(), ['survey_user_answer_question_id' => 'survey_question_id'])->indexBy('survey_user_answer_answer_id');
+        return $this->hasMany(SurveyUserAnswer::className(), ['survey_user_answer_question_id' => 'survey_question_id'])
+            ->andOnCondition(['survey_user_answer_user_id' => \Yii::$app->user->getId()])
+            ->indexBy('survey_user_answer_answer_id');
+    }
+
+    /**
+     * Returns the total number of users voted for this answer
+     *
+     * @return int
+     */
+    public function getTotalUserAnswersCount()
+    {
+        switch ($this->survey_question_type){
+            case SurveyType::TYPE_MULTIPLE:
+                $result = SurveyUserAnswer::find()->where(['survey_user_answer_question_id' => $this->survey_question_id])
+                    ->andWhere(['survey_user_answer_value' => 1])
+                    ->count();
+                break;
+            case SurveyType::TYPE_ONE_OF_LIST:
+            case SurveyType::TYPE_DROPDOWN:
+                $result = SurveyUserAnswer::find()->where(['survey_user_answer_question_id' => $this->survey_question_id])
+                    ->andWhere(['>', 'survey_user_answer_value', 0])
+                    ->count();
+                break;
+            default:
+                $result = 0;
+                break;
+        }
+
+        return $result;
     }
 }

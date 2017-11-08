@@ -46,6 +46,7 @@ class SurveySearch extends Survey
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => ['defaultPageSize' => 10]
         ]);
 
         $this->load($params);

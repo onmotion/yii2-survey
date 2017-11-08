@@ -15,3 +15,9 @@ use yii\helpers\Url;
 /** @var $question \common\modules\survey\models\SurveyQuestion */
 /** @var $form \yii\widgets\ActiveForm */
 
+$userAnswers = $question->userAnswers;
+$userAnswer = !empty(current($userAnswers)) ? current($userAnswers) : (new SurveyUserAnswer()) ;
+
+echo $form->field($userAnswer, "[$question->survey_question_id]survey_user_answer_value")->input('text',
+    ['placeholder' => \Yii::t('survey', 'Enter your answer here')])->label(\Yii::t('survey', 'Answer'));
+

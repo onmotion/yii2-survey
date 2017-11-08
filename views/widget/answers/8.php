@@ -15,10 +15,9 @@ use yii\helpers\Url;
 /** @var $question \common\modules\survey\models\SurveyQuestion */
 /** @var $form \yii\widgets\ActiveForm */
 
-echo Html::beginTag('div', ['class' => 'answers-stat']);
+$userAnswers = $question->userAnswers;
+$userAnswer = !empty(current($userAnswers)) ? current($userAnswers) : (new SurveyUserAnswer()) ;
 
-    $average = $question->answers[0]->getTotalUserAnswersCount();
-    $average = $average > 0 ? $average : 0;
-    echo "average <b>$average</b>";
+echo $form->field($userAnswer, "[$question->survey_question_id]survey_user_answer_text")->textarea(
+    ['placeholder' => \Yii::t('survey', 'Enter your answer here'), 'rows' => 6])->label(\Yii::t('survey', 'Answer'));
 
-echo Html::endTag('div');

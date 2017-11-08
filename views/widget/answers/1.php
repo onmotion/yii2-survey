@@ -23,11 +23,16 @@ foreach ($question->answers as $i => $answer) {
 
 
     if ($answer->survey_answer_show_descr) {
-        $label .= '<br>' . $answer->survey_answer_descr;
+        $label .=  "<div class='answer-description'>$answer->survey_answer_descr</div>";
     }
     $label .= '</div>';
 
-    echo $form->field($userAnswer, "[$question->survey_question_id][$answer->survey_answer_id]survey_user_answer_value", ['template' => "{label}\n<div class='survey-questions-form-field checkbox-group'>{input}</div>\n{hint}\n{error}"])->checkbox(['label' => $label]);
+    echo $form->field($userAnswer, "[$question->survey_question_id][$answer->survey_answer_id]survey_user_answer_value",
+        [
+            'template' => "<div class='survey-questions-form-field checkbox-group'>{input}{label}</div>\n{hint}\n{error}",
+            'labelOptions' => ['class' => 'css-label', 'label' => $label],
+        ]
+    )->checkbox(['class' => 'css-checkbox'], false);
 
     echo Html::tag('br', '');
 }

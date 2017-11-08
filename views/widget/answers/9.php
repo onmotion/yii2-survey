@@ -1,0 +1,32 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: kozhevnikov
+ * Date: 10/10/2017
+ * Time: 13:59
+ */
+
+use common\modules\survey\models\SurveyUserAnswer;
+use kartik\widgets\DateTimePicker;
+use vova07\imperavi\Widget;
+use yii\helpers\Html;
+use yii\helpers\Url;
+
+/** @var $question \common\modules\survey\models\SurveyQuestion */
+/** @var $form \yii\widgets\ActiveForm */
+
+$userAnswers = $question->userAnswers;
+
+foreach ($question->answers as $i => $answer) {
+    $userAnswer = $userAnswers[$answer->survey_answer_id] ?? (new SurveyUserAnswer());
+
+    echo $form->field($userAnswer, "[$question->survey_question_id][$answer->survey_answer_id]survey_user_answer_value")->widget(DateTimePicker::classname(), [
+        'options' => ['placeholder' => 'Enter event time ...'],
+        'pluginOptions' => [
+            'format' => 'dd-MM-yyyy HH:ii P',
+            'autoclose' => true
+        ]
+    ])->label($answer->survey_answer_name);
+
+    echo Html::tag('br', '');
+}
