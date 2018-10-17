@@ -1,8 +1,8 @@
 {
-  "name": "onmotion/",
-  "description": "",
+  "name": "onmotion/yii2-survey",
+  "description": "survey module for Yii2 application",
   "type": "yii2-extension",
-  "keywords": ["yii2","extension","module","widget"],
+  "keywords": ["yii2","extension","module","widget", "survey", "polls"],
   "license": "MIT",
   "authors": [
     {
