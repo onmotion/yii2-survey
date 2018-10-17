@@ -30,7 +30,7 @@
     {
       "type": "vcs",
       "url": "https://github.com/onmotion/yii2-widget-upload-crop"
-    },
+    }
   ],
   "autoload": {
     "psr-4": {
