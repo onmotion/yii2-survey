@@ -7,7 +7,7 @@
  */
 
 use cenotia\components\modal\RemoteModal;
-use common\modules\survey\models\search\SurveyStatSearch;
+use onmotion\survey\models\search\SurveyStatSearch;
 use kartik\editable\Editable;
 use kartik\helpers\Html;
 use wbraganca\dynamicform\DynamicFormWidget;
@@ -17,7 +17,7 @@ use yii\widgets\ActiveForm;
 use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
-/* @var $survey \common\modules\survey\models\Survey */
+/* @var $survey \onmotion\survey\models\Survey */
 /* @var $respondentsCount integer */
 
 $this->title = Yii::t('survey', 'Survey') . ' - ' . $survey->survey_name;
@@ -33,7 +33,7 @@ BootstrapPluginAsset::register($this);
                 <div>
                     <div class="survey-labels">
                         <span class="survey-label respondents-toggle" data-toggle="tooltip"
-                              title="<?= \Yii::t('survey', 'Respondents') ?>"><?= $survey->getRespondentsCount() ?></span>
+                              title="<?= \Yii::t('survey', 'Respondents') ?>"><?= \Yii::t('survey', 'Number of respondents') ?>: <?= $survey->getRespondentsCount() ?></span>
                         <span class="survey-label" data-toggle="tooltip"
                               title="<?= \Yii::t('survey', 'Questions') ?>"><?= $survey->getQuestions()->count() ?></span>
                     </div>
@@ -69,40 +69,7 @@ BootstrapPluginAsset::register($this);
                 echo Html::endTag('div');
 
                 echo Html::beginTag('div', ['class' => 'col-md-6']);
-                echo Html::label(Yii::t('survey', 'Wallet Price') . ': ', 'survey-survey_wallet');
-                echo Editable::widget([
-                    'model' => $survey,
-                    'attribute' => 'survey_wallet',
-                    'asPopover' => true,
-                    'header' => 'Price',
-                    'size' => 'md',
-                    'formOptions' => [
-                        'action' => Url::toRoute(['default/update-editable', 'property' => 'survey_wallet'])
-                    ],
-                    'additionalData' => ['id' => $survey->survey_id],
-                    'options' => [
-                        'class' => 'form-control',
-                        'placeholder' => 'Enter survey price...',
-                        'type' => 'number',
-                    ]
-                ]);
-                echo Html::label(Yii::t('survey', 'Status Price') . ': ', 'survey-survey_status');
-                echo Editable::widget([
-                    'model' => $survey,
-                    'attribute' => 'survey_status',
-                    'asPopover' => true,
-                    'header' => 'Price',
-                    'size' => 'md',
-                    'formOptions' => [
-                        'action' => Url::toRoute(['default/update-editable', 'property' => 'survey_status'])
-                    ],
-                    'additionalData' => ['id' => $survey->survey_id],
-                    'options' => [
-                        'class' => 'form-control',
-                        'placeholder' => 'Enter survey price...',
-                        'type' => 'number',
-                    ]
-                ]);
+
                 echo Html::endTag('div');
                 echo Html::tag('div', '', ['class' => 'clearfix']);
 

@@ -37,6 +37,12 @@ return [
     'Label' => 'Заголовок',
     'Enter your answer here' => 'Введите свой ответ',
     'Time to pass' => 'Время прохождения',
+    'Enter question name' => 'Введите вопрос',
+    'Were interviewed' => 'Прошли опрос',
+    'Respondents count' => 'Респондентов',
+    'Questions count' => 'Вопросов',
+    'Number of respondents' => 'Респондентов',
+    'Add respondents' => 'Добавить респондентов',
 
     'Error' => 'Ошибка',
     'Complete' => 'Завершено',

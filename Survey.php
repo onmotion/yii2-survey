@@ -6,10 +6,10 @@
  * Time: 10:09
  */
 
-namespace common\modules\survey;
+namespace onmotion\survey;
 
 
-use common\modules\survey\models\SurveyStat;
+use onmotion\survey\models\SurveyStat;
 use yii\db\Exception;
 use yii\db\Expression;
 use yii\web\ForbiddenHttpException;
@@ -41,10 +41,10 @@ class Survey extends \yii\base\Widget
 
     public function beforeRun()
     {
-        $assignedModel = SurveyStat::getAssignedUserStat(\Yii::$app->user->getId(), $this->surveyId);
-        if (empty($assignedModel)) {
-            throw new ForbiddenHttpException();
-        }
+//        $assignedModel = SurveyStat::getAssignedUserStat(\Yii::$app->user->getId(), $this->surveyId);
+//        if (empty($assignedModel)) {
+//            throw new ForbiddenHttpException();
+//        }
         return parent::beforeRun();
     }
 
@@ -91,7 +91,7 @@ class Survey extends \yii\base\Widget
 
     protected function findModel($id)
     {
-        if (($model = \common\modules\survey\models\Survey::findOne($id)) !== null) {
+        if (($model = \onmotion\survey\models\Survey::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

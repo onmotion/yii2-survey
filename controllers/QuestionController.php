@@ -1,11 +1,11 @@
 <?php
 
-namespace common\modules\survey\controllers;
+namespace onmotion\survey\controllers;
 
-use common\modules\survey\models\Survey;
-use common\modules\survey\models\SurveyAnswer;
-use common\modules\survey\models\SurveyQuestion;
-use common\modules\survey\models\SurveyType;
+use onmotion\survey\models\Survey;
+use onmotion\survey\models\SurveyAnswer;
+use onmotion\survey\models\SurveyQuestion;
+use onmotion\survey\models\SurveyType;
 use kartik\widgets\ActiveForm;
 use vova07\imperavi\actions\GetAction;
 use yii\base\Event;
@@ -30,24 +30,23 @@ class QuestionController extends Controller
     {
         return [
             'images-get' => [
-                'class' => 'vova07\imperavi\actions\GetAction',
+                'class' => 'vova07\imperavi\actions\GetImagesAction',
                 'url' => $this->module->params['uploadsUrl'] . \Yii::$app->session->get('surveyUploadsSubpath', ''), // URL адрес папки где хранятся изображения.
                 'path' => $this->module->params['uploadsPath'] . \Yii::$app->session->get('surveyUploadsSubpath', ''), // Или абсолютный путь к папке с изображениями.
-                'type' => GetAction::TYPE_IMAGES,
+                'options' => ['only' => ['*.jpg', '*.jpeg', '*.png', '*.gif', '*.ico']], // These options are by default.
             ],
             'image-upload' => [
-                'class' => 'vova07\imperavi\actions\UploadAction',
+                'class' => 'vova07\imperavi\actions\UploadFileAction',
                 'url' => $this->module->params['uploadsUrl'] . \Yii::$app->session->get('surveyUploadsSubpath', ''), // URL адрес папки где хранятся изображения.
                 'path' => $this->module->params['uploadsPath'] . \Yii::$app->session->get('surveyUploadsSubpath', ''), // Или абсолютный путь к папке с изображениями.
             ],
             'files-get' => [
-                'class' => 'vova07\imperavi\actions\GetAction',
+                'class' => 'vova07\imperavi\actions\GetFilesAction',
                 'url' => $this->module->params['uploadsUrl'] . \Yii::$app->session->get('surveyUploadsSubpath', ''), // URL адрес папки где хранятся изображения.
                 'path' => $this->module->params['uploadsPath'] . \Yii::$app->session->get('surveyUploadsSubpath', ''), // Или абсолютный путь к папке с изображениями.
-                'type' => GetAction::TYPE_FILES,
             ],
             'file-upload' => [
-                'class' => 'vova07\imperavi\actions\UploadAction',
+                'class' => 'vova07\imperavi\actions\UploadFileAction',
                 'url' => $this->module->params['uploadsUrl'] . \Yii::$app->session->get('surveyUploadsSubpath', ''), // URL адрес папки где хранятся изображения.
                 'path' => $this->module->params['uploadsPath'] . \Yii::$app->session->get('surveyUploadsSubpath', ''), // Или абсолютный путь к папке с изображениями.
                 'uploadOnlyImage' => false, // Для загрузки не только изображений.
@@ -61,7 +60,7 @@ class QuestionController extends Controller
         $survey = $this->findSurveyModel($id);
         $question = new SurveyQuestion();
         $question->loadDefaultValues();
-        $question->survey_question_name = \Yii::t('survey', 'New Question');
+        // $question->survey_question_name = \Yii::t('survey', 'New Question');
         $survey->link('questions', $question);
 
         for ($i = 1; $i <= 2; ++$i) {
@@ -118,6 +117,7 @@ class QuestionController extends Controller
                         $result["surveyanswer-{$question->survey_question_id}-{$i}-{$attribute}"] = $errors;
                     }
                 }
+                //    $model->validate();
                 $model->save();
             }
         }
@@ -149,7 +149,7 @@ class QuestionController extends Controller
             }
         }
 
-        $question = $this->findModel($id);
+        $question->refresh();
 
         return $this->renderAjax('_form', ['question' => $question]);
     }

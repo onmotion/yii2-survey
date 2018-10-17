@@ -6,13 +6,14 @@
  * Time: 13:59
  */
 
-use common\modules\survey\models\SurveyUserAnswer;
+use onmotion\survey\models\SurveyUserAnswer;
+use kartik\widgets\DatePicker;
 use kartik\widgets\DateTimePicker;
 use vova07\imperavi\Widget;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
-/** @var $question \common\modules\survey\models\SurveyQuestion */
+/** @var $question \onmotion\survey\models\SurveyQuestion */
 /** @var $form \yii\widgets\ActiveForm */
 
 $userAnswers = $question->userAnswers;
@@ -20,13 +21,20 @@ $userAnswers = $question->userAnswers;
 foreach ($question->answers as $i => $answer) {
     $userAnswer = $userAnswers[$answer->survey_answer_id] ?? (new SurveyUserAnswer());
 
-    echo $form->field($userAnswer, "[$question->survey_question_id][$answer->survey_answer_id]survey_user_answer_value")->widget(DateTimePicker::classname(), [
+    echo $form->field($userAnswer, "[$question->survey_question_id][$answer->survey_answer_id]survey_user_answer_value",
+        [
+            'template' => "<div class='survey-questions-form-field date-form-field'>{input}{label}\n{hint}\n{error}</div>",
+            'labelOptions' => ['class' => 'css-label answer-text'],
+        ]
+    )->widget(DatePicker::classname(), [
         'options' => ['placeholder' => 'Enter event time ...'],
+        'removeButton' => false,
         'pluginOptions' => [
-            'format' => 'dd-MM-yyyy HH:ii P',
+            'format' => 'dd-MM-yyyy',
             'autoclose' => true
         ]
     ])->label($answer->survey_answer_name);
+    // echo Html::label($answer->survey_answer_name);
 
-    echo Html::tag('br', '');
+    echo Html::tag('div', '', ['class' => 'clearfix']);
 }

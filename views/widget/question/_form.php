@@ -7,10 +7,10 @@
  */
 
 
-use common\modules\survey\models\SurveyType;
+use onmotion\survey\models\SurveyType;
 use kartik\editable\Editable;
 use kartik\helpers\Html;
-use kartik\widgets\Select2;
+use kartik\select2\Select2;
 
 use vova07\imperavi\Widget;
 use yii\helpers\Url;
@@ -19,7 +19,7 @@ use yii\widgets\Pjax;
 
 
 /* @var $this yii\web\View */
-/* @var $question \common\modules\survey\models\SurveyQuestion */
+/* @var $question \onmotion\survey\models\SurveyQuestion */
 /* @var $number integer */
 
 Pjax::begin([

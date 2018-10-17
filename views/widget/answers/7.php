@@ -6,12 +6,12 @@
  * Time: 13:59
  */
 
-use common\modules\survey\models\SurveyUserAnswer;
+use onmotion\survey\models\SurveyUserAnswer;
 use vova07\imperavi\Widget;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
-/** @var $question \common\modules\survey\models\SurveyQuestion */
+/** @var $question \onmotion\survey\models\SurveyQuestion */
 /** @var $form \yii\widgets\ActiveForm */
 
 $userAnswers = $question->userAnswers;
@@ -22,5 +22,5 @@ foreach ($question->answers as $i => $answer) {
     echo $form->field($userAnswer, "[$question->survey_question_id][$answer->survey_answer_id]survey_user_answer_value")->input('text',
         ['placeholder' => \Yii::t('survey', 'Enter your answer here')])->label($answer->survey_answer_name);
 
-    echo Html::tag('br', '');
+    echo Html::tag('div', '', ['class' => 'clearfix']);
 }

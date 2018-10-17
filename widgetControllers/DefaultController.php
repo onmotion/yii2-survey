@@ -1,16 +1,16 @@
 <?php
 
-namespace common\modules\survey\widgetControllers;
+namespace onmotion\survey\widgetControllers;
 
-use common\modules\survey\models\search\SurveySearch;
-use common\modules\survey\models\search\SurveyStatSearch;
-use common\modules\survey\models\Survey;
-use common\modules\survey\models\SurveyAnswer;
-use common\modules\survey\models\SurveyQuestion;
-use common\modules\survey\models\SurveyStat;
-use common\modules\survey\models\SurveyType;
-use common\modules\survey\SurveyInterface;
-use common\modules\survey\User;
+use onmotion\survey\models\search\SurveySearch;
+use onmotion\survey\models\search\SurveyStatSearch;
+use onmotion\survey\models\Survey;
+use onmotion\survey\models\SurveyAnswer;
+use onmotion\survey\models\SurveyQuestion;
+use onmotion\survey\models\SurveyStat;
+use onmotion\survey\models\SurveyType;
+use onmotion\survey\SurveyInterface;
+use onmotion\survey\User;
 use yii\base\Model;
 use yii\base\UserException;
 use yii\db\Expression;

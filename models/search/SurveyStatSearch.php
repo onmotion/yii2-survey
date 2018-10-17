@@ -1,14 +1,14 @@
 <?php
 
-namespace common\modules\survey\models\search;
+namespace onmotion\survey\models\search;
 
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\modules\survey\models\SurveyStat;
+use onmotion\survey\models\SurveyStat;
 
 /**
- * SurveyStatSearch represents the model behind the search form about `common\modules\survey\models\SurveyStat`.
+ * SurveyStatSearch represents the model behind the search form about `onmotion\survey\models\SurveyStat`.
  */
 class SurveyStatSearch extends SurveyStat
 {
@@ -46,13 +46,15 @@ class SurveyStatSearch extends SurveyStat
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query->joinWith('survey'),
+            'sort' => ['defaultOrder' => ['survey_stat_assigned_at' => SORT_DESC]]
+
         ]);
 
         $this->load($params);
 
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
+             $query->where('0=1');
             return $dataProvider;
         }
 

@@ -6,7 +6,7 @@
  * Time: 14:18
  */
 
-namespace common\modules\survey;
+namespace onmotion\survey;
 
 
 use yii\web\AssetBundle;
@@ -21,7 +21,7 @@ class SurveyWidgetAsset extends AssetBundle
     }
 
     public $publishOptions = [
-        'forceCopy' => true //dev
+        'forceCopy' => YII_ENV_DEV //dev
     ];
 
     public $css = [
@@ -29,7 +29,7 @@ class SurveyWidgetAsset extends AssetBundle
         'css/preloader.css',
     ];
     public $js = [
-        'js/survey.js',
+        'js/promise.min.js',
         'js/survey.widget.js',
     ];
     public $depends = [

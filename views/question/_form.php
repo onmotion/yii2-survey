@@ -7,10 +7,10 @@
  */
 
 
-use common\modules\survey\models\SurveyType;
+use onmotion\survey\models\SurveyType;
 use kartik\editable\Editable;
 use kartik\helpers\Html;
-use kartik\widgets\Select2;
+use kartik\select2\Select2;
 
 use vova07\imperavi\Widget;
 use yii\helpers\Url;
@@ -19,7 +19,7 @@ use yii\widgets\Pjax;
 
 
 /* @var $this yii\web\View */
-/* @var $question \common\modules\survey\models\SurveyQuestion */
+/* @var $question \onmotion\survey\models\SurveyQuestion */
 
 Pjax::begin([
     'id' => 'survey-questions-pjax-' . $question->survey_question_id,
@@ -51,18 +51,18 @@ echo Html::beginTag('div', ['class' => 'survey-block', 'id' => 'survey-question-
 
 echo Html::beginTag('div', ['class' => 'survey-question-name-wrap']);
 
-echo $form->field($question, "[{$question->survey_question_id}]survey_question_name")->input('text')->label(false);
+echo $form->field($question, "[{$question->survey_question_id}]survey_question_name")->input('text', ['placeholder' => \Yii::t('survey', 'Enter question name')])->label(false);
 
-echo Html::a(\Yii::t('survey', '<i class="fa fa-trash-o" aria-hidden="true"></i>'), Url::toRoute(['question/delete', 'id' => $question->survey_question_id]), [
+echo Html::a(\Yii::t('survey', '<span class="glyphicon glyphicon-trash"></span>'), Url::toRoute(['question/delete', 'id' => $question->survey_question_id]), [
     'class' => 'btn btn-danger pull-right btn-delete',
 ]);
-echo Html::submitButton('<i class="fa fa-check" aria-hidden="true"></i>', ['class' => 'btn btn-success pull-right btn-save-question']);
+echo Html::submitButton('<span class="glyphicon glyphicon-ok"></span>', ['class' => 'btn btn-success pull-right btn-save-question']);
 echo Html::submitButton('', ['class' => 'hidden update-question-btn survey-question-submit', 'data-action' => Url::toRoute(['question/update', 'id' => $question->survey_question_id])]);
 echo Html::endTag('div');
 
 $confirmMessage = \Yii::t('survey', 'Current types are not compatible, all entered data will be deleted. Are you sure?');
 echo $form->field($question, "[{$question->survey_question_id}]survey_question_type")->widget(Select2::classname(), [
-    'data' => \common\modules\survey\models\SurveyType::getDropdownList(),
+    'data' => \onmotion\survey\models\SurveyType::getDropdownList(),
     'pluginOptions' => [
         'allowClear' => false
     ],
@@ -70,10 +70,10 @@ echo $form->field($question, "[{$question->survey_question_id}]survey_question_t
 
         "select2:selecting" => new \yii\web\JsExpression(<<<JS
                 function _(e) {
-                     let that = $(this);
-                     let previous = that.val();
-                     let current = e.params.args.data.id;
-                     let updateBtn = $(this).closest('[data-pjax-container]').find('.update-question-btn');
+                     var that = $(this);
+                     var previous = that.val();
+                     var current = e.params.args.data.id;
+                     var updateBtn = $(this).closest('[data-pjax-container]').find('.update-question-btn');
                   
                      if (current === '5'){
                           krajeeDialog.confirm('$confirmMessage', function (result) {
@@ -111,7 +111,7 @@ echo $form->field($question, "[{$question->survey_question_id}]survey_question_s
 echo Html::tag('br', '');
 
 if ($question->survey_question_show_descr) {
-    echo $form->field($question, "[{$question->survey_question_id}]survey_question_descr")->widget(Widget::className(), [
+    echo $form->field($question, "[{$question->survey_question_id}]survey_question_descr")->widget(Widget::class, [
         'settings' => [
             'lang' => 'ru',
             'minHeight' => 200,

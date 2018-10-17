@@ -6,10 +6,10 @@
  * Time: 13:59
  */
 
-use common\modules\survey\models\SurveyUserAnswer;
+use onmotion\survey\models\SurveyUserAnswer;
 use yii\helpers\Html;
 
-/** @var $question \common\modules\survey\models\SurveyQuestion */
+/** @var $question \onmotion\survey\models\SurveyQuestion */
 /** @var $form \yii\widgets\ActiveForm */
 
 $userAnswers = $question->userAnswers;
@@ -22,4 +22,4 @@ foreach ($question->answers as $i => $answer) {
 
 echo $form->field($userAnswer, "[$question->survey_question_id]survey_user_answer_value")->dropDownList($ddList,
     ['encode' => false, 'prompt' => \Yii::t('survey', 'Select...')])->label(false);
-echo Html::tag('br', '');
+echo Html::tag('div', '', ['class' => 'clearfix']);

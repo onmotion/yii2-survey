@@ -1,6 +1,6 @@
 <?php
 
-namespace common\modules\survey;
+namespace onmotion\survey;
 
 use yii\base\UserException;
 use yii\helpers\FileHelper;
@@ -14,7 +14,7 @@ class Module extends \yii\base\Module
     /**
      * @inheritdoc
      */
-    public $controllerNamespace = null;
+    public $controllerNamespace;
     public $userClass;
 
     public $params = [
@@ -28,21 +28,23 @@ class Module extends \yii\base\Module
     public function init()
     {
 
-        $this->controllerNamespace = \Yii::$app->controllerNamespace === 'backend\controllers'
-            ? 'common\modules\survey\controllers'
-            : 'common\modules\survey\widgetControllers';
+        if (empty($this->controllerNamespace)) {
+            $this->controllerNamespace = \Yii::$app->controllerNamespace === 'backend\controllers'
+                ? 'onmotion\survey\controllers'
+                : 'onmotion\survey\widgetControllers';
+        }
 
 
         parent::init();
 
         if (empty($this->params['uploadsUrl'])) {
             throw new UserException("You must set uploadsUrl param in the config. Please see the documentation for more information.");
-        }else{
+        } else {
             $this->params['uploadsUrl'] = rtrim($this->params['uploadsUrl'], '/');
         }
         if (empty($this->params['uploadsPath'])) {
             throw new UserException("You must set uploadsPath param in the config. Please see the documentation for more information.");
-        }else{
+        } else {
             $this->params['uploadsPath'] = FileHelper::normalizePath($this->params['uploadsPath']);
         }
 

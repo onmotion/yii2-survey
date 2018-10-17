@@ -1,6 +1,6 @@
 <?php
 
-namespace common\modules\survey\models;
+namespace onmotion\survey\models;
 
 use Yii;
 
@@ -36,7 +36,7 @@ class SurveyUserAnswer extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['survey_user_answer_id', 'survey_user_answer_user_id'], 'required'],
+            [['survey_user_answer_user_id'], 'required'],
             [['survey_user_answer_id', 'survey_user_answer_user_id', 'survey_user_answer_survey_id', 'survey_user_answer_question_id', 'survey_user_answer_answer_id'], 'integer'],
             [['survey_user_answer_value'], 'string', 'max' => 255],
             [['survey_user_answer_text'], 'string'],
@@ -52,11 +52,21 @@ class SurveyUserAnswer extends \yii\db\ActiveRecord
             }, 'message' => \Yii::t('survey', 'You must enter an answer')],
 
             [['survey_user_answer_value', 'survey_user_answer_text'], 'default', 'value' => null],
-            [['survey_user_answer_answer_id'], 'exist', 'skipOnError' => true, 'targetClass' => SurveyAnswer::className(), 'targetAttribute' => ['survey_user_answer_answer_id' => 'survey_answer_id']],
-            [['survey_user_answer_question_id'], 'exist', 'skipOnError' => true, 'targetClass' => SurveyQuestion::className(), 'targetAttribute' => ['survey_user_answer_question_id' => 'survey_question_id']],
-            [['survey_user_answer_survey_id'], 'exist', 'skipOnError' => true, 'targetClass' => Survey::className(), 'targetAttribute' => ['survey_user_answer_survey_id' => 'survey_id']],
+            [['survey_user_answer_answer_id'], 'exist', 'skipOnError' => true, 'targetClass' => SurveyAnswer::class, 'targetAttribute' => ['survey_user_answer_answer_id' => 'survey_answer_id']],
+            [['survey_user_answer_question_id'], 'exist', 'skipOnError' => true, 'targetClass' => SurveyQuestion::class, 'targetAttribute' => ['survey_user_answer_question_id' => 'survey_question_id']],
+            [['survey_user_answer_survey_id'], 'exist', 'skipOnError' => true, 'targetClass' => Survey::class, 'targetAttribute' => ['survey_user_answer_survey_id' => 'survey_id']],
             [['survey_user_answer_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => \Yii::$app->user->identityClass::className(), 'targetAttribute' => ['survey_user_answer_user_id' => 'id']],
         ];
+    }
+
+    public function beforeValidate()
+    {
+        $stat = SurveyStat::getAssignedUserStat(\Yii::$app->user->getId(), $this->question->survey_question_survey_id);
+        if ($stat && $stat->survey_stat_is_done){
+            return false;
+        }
+
+        return parent::beforeValidate();
     }
 
     /**
@@ -79,7 +89,7 @@ class SurveyUserAnswer extends \yii\db\ActiveRecord
      */
     public function getSurveyUserAnswerAnswer()
     {
-        return $this->hasOne(SurveyAnswer::className(), ['survey_answer_id' => 'survey_user_answer_answer_id']);
+        return $this->hasOne(SurveyAnswer::class, ['survey_answer_id' => 'survey_user_answer_answer_id']);
     }
 
     /**
@@ -87,7 +97,7 @@ class SurveyUserAnswer extends \yii\db\ActiveRecord
      */
     public function getQuestion()
     {
-        return $this->hasOne(SurveyQuestion::className(), ['survey_question_id' => 'survey_user_answer_question_id']);
+        return $this->hasOne(SurveyQuestion::class, ['survey_question_id' => 'survey_user_answer_question_id']);
     }
 
     /**
@@ -95,7 +105,7 @@ class SurveyUserAnswer extends \yii\db\ActiveRecord
      */
     public function getSurveyUserAnswerSurvey()
     {
-        return $this->hasOne(Survey::className(), ['survey_id' => 'survey_user_answer_survey_id']);
+        return $this->hasOne(Survey::class, ['survey_id' => 'survey_user_answer_survey_id']);
     }
 
     /**

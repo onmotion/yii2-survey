@@ -1,6 +1,6 @@
 <?php
 
-namespace common\modules\survey\models;
+namespace onmotion\survey\models;
 
 use Yii;
 use yii\db\Query;
@@ -46,19 +46,11 @@ class SurveyAnswer extends \yii\db\ActiveRecord
             [['survey_answer_name'], 'string', 'max' => 100],
             [['survey_answer_name'], 'required'],
             [['survey_answer_class', 'survey_answer_comment'], 'string', 'max' => 255],
-            [['survey_answer_question_id'], 'exist', 'skipOnError' => true, 'targetClass' => SurveyQuestion::className(), 'targetAttribute' => ['survey_answer_question_id' => 'survey_question_id']],
+            [['survey_answer_question_id'], 'exist', 'skipOnError' => true, 'targetClass' => SurveyQuestion::class, 'targetAttribute' => ['survey_answer_question_id' => 'survey_question_id']],
         ];
     }
 
-    public function beforeValidate()
-    {
-        $stat = SurveyStat::getAssignedUserStat(\Yii::$app->user->getId(), $this->question->survey_question_survey_id);
-        if ($stat && $stat->survey_stat_is_done){
-            return false;
-        }
 
-        return parent::beforeValidate();
-    }
 
     public function afterDelete()
     {
@@ -96,7 +88,7 @@ class SurveyAnswer extends \yii\db\ActiveRecord
      */
     public function getQuestion()
     {
-        return $this->hasOne(SurveyQuestion::className(), ['survey_question_id' => 'survey_answer_question_id']);
+        return $this->hasOne(SurveyQuestion::class, ['survey_question_id' => 'survey_answer_question_id']);
     }
 
     /**
@@ -104,7 +96,7 @@ class SurveyAnswer extends \yii\db\ActiveRecord
      */
     public function getUserAnswers()
     {
-        return $this->hasMany(SurveyUserAnswer::className(), ['survey_user_answer_answer_id' => 'survey_answer_id']);
+        return $this->hasMany(SurveyUserAnswer::class, ['survey_user_answer_answer_id' => 'survey_answer_id']);
     }
 
     /**

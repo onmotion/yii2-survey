@@ -1,8 +1,8 @@
 <?php
 
-namespace common\modules\survey\models;
+namespace onmotion\survey\models;
 
-use common\modules\user\models\User;
+use app\modules\user\models\User;
 use Yii;
 use yii\base\Event;
 use yii\base\UserException;
@@ -56,6 +56,7 @@ class SurveyStat extends \yii\db\ActiveRecord
         }
 
         if (isset($changedAttributes['survey_stat_is_done']) && $changedAttributes['survey_stat_is_done'] === false){
+            Event::trigger(self::class, self::EVENT_SURVEY_AFTER_COMPLETE, new Event(['sender' => $this]));
             \Yii::$app->trigger(self::EVENT_SURVEY_AFTER_COMPLETE, new Event(['sender' => $this]));
         }
     }
@@ -73,7 +74,7 @@ class SurveyStat extends \yii\db\ActiveRecord
     {
         return [
             [
-                'class' => TimestampBehavior::className(),
+                'class' => TimestampBehavior::class,
                 'attributes' => [
                     BaseActiveRecord::EVENT_BEFORE_INSERT => ['survey_stat_assigned_at'],
                     BaseActiveRecord::EVENT_BEFORE_UPDATE => ['survey_stat_updated_at'],
@@ -98,7 +99,7 @@ class SurveyStat extends \yii\db\ActiveRecord
             [['survey_stat_is_done'], 'boolean'],
             [['survey_stat_ip'], 'string', 'max' => 45],
             [['survey_stat_hash'], 'string', 'max' => 32],
-            [['survey_stat_survey_id'], 'exist', 'skipOnError' => true, 'targetClass' => Survey::className(), 'targetAttribute' => ['survey_stat_survey_id' => 'survey_id']],
+            [['survey_stat_survey_id'], 'exist', 'skipOnError' => true, 'targetClass' => Survey::class, 'targetAttribute' => ['survey_stat_survey_id' => 'survey_id']],
             [['survey_stat_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => \Yii::$app->user->identityClass, 'targetAttribute' => ['survey_stat_user_id' => 'id']],
         ];
     }
@@ -126,7 +127,7 @@ class SurveyStat extends \yii\db\ActiveRecord
      */
     public function getSurvey()
     {
-        return $this->hasOne(Survey::className(), ['survey_id' => 'survey_stat_survey_id']);
+        return $this->hasOne(Survey::class, ['survey_id' => 'survey_stat_survey_id']);
     }
 
     /**
@@ -151,7 +152,7 @@ class SurveyStat extends \yii\db\ActiveRecord
             throw new UserException('survey does not exist');
         }
 
-        /** @var \common\modules\user\models\User $User */
+        /** @var \app\modules\user\models\User $User */
         $User = \Yii::$app->user->identityClass;
         $user = $User::findOne($userId);
         if (!$user) {
@@ -182,7 +183,7 @@ class SurveyStat extends \yii\db\ActiveRecord
             throw new UserException('survey does not exist');
         }
 
-        /** @var \common\modules\user\models\User $User */
+        /** @var \app\modules\user\models\User $User */
         $User = \Yii::$app->user->identityClass;
         $user = $User::findOne($userId);
         if (!$user) {
@@ -205,7 +206,7 @@ class SurveyStat extends \yii\db\ActiveRecord
             throw new UserException('survey does not exist');
         }
 
-        /** @var \common\modules\user\models\User $User */
+        /** @var \app\modules\user\models\User $User */
         $User = \Yii::$app->user->identityClass;
         $user = $User::findOne($userId);
         if (!$user) {

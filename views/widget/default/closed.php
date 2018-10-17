@@ -14,11 +14,11 @@ use yii\bootstrap\BootstrapPluginAsset;
 use yii\helpers\Url;
 
 /* @var $this yii\web\View */
-/* @var $survey \common\modules\survey\models\Survey */
+/* @var $survey \onmotion\survey\models\Survey */
 
 ?>
 
 
-<h4>Survey is closed</h4>
+<h4>Опрос закрыт</h4>
 
 

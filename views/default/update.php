@@ -12,7 +12,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
 use yii\helpers\Url;
 
 /* @var $this yii\web\View */
-/* @var $survey \common\modules\survey\models\Survey */
+/* @var $survey \onmotion\survey\models\Survey */
 
 $this->title = Yii::t('survey', 'Update survey');
 

@@ -1,14 +1,14 @@
 <?php
 
-namespace common\modules\survey\models\search;
+namespace onmotion\survey\models\search;
 
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\modules\survey\models\Survey;
+use onmotion\survey\models\Survey;
 
 /**
- * SurveySearch represents the model behind the search form about `common\modules\survey\models\Survey`.
+ * SurveySearch represents the model behind the search form about `onmotion\survey\models\Survey`.
  */
 class SurveySearch extends Survey
 {
@@ -18,7 +18,7 @@ class SurveySearch extends Survey
     public function rules()
     {
         return [
-            [['survey_id'], 'integer'],
+            [['survey_id', 'survey_badge_id'], 'integer'],
             [['survey_name', 'survey_created_at', 'survey_updated_at', 'survey_expired_at'], 'safe'],
             [['survey_is_pinned', 'survey_is_closed'], 'boolean'],
         ];
@@ -46,14 +46,15 @@ class SurveySearch extends Survey
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'pagination' => ['defaultPageSize' => 10]
+            'pagination' => ['defaultPageSize' => 10],
+            'sort' => ['defaultOrder' => ['survey_created_at' => SORT_DESC]]
         ]);
 
         $this->load($params);
 
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
+             $query->where('0=1');
             return $dataProvider;
         }
 

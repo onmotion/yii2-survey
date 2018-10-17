@@ -1,13 +1,13 @@
 <?php
 
-namespace common\modules\survey\widgetControllers;
+namespace onmotion\survey\widgetControllers;
 
-use common\modules\survey\models\Survey;
-use common\modules\survey\models\SurveyAnswer;
-use common\modules\survey\models\SurveyQuestion;
-use common\modules\survey\models\SurveyStat;
-use common\modules\survey\models\SurveyType;
-use common\modules\survey\models\SurveyUserAnswer;
+use onmotion\survey\models\Survey;
+use onmotion\survey\models\SurveyAnswer;
+use onmotion\survey\models\SurveyQuestion;
+use onmotion\survey\models\SurveyStat;
+use onmotion\survey\models\SurveyType;
+use onmotion\survey\models\SurveyUserAnswer;
 use kartik\widgets\ActiveForm;
 use vova07\imperavi\actions\GetAction;
 use yii\base\Event;
@@ -67,7 +67,7 @@ class QuestionController extends Controller
                         foreach ($userAnswer->getErrors() as $attribute => $errors) {
                             $result["surveyuseranswer-{$question->survey_question_id}-{$answer->survey_answer_id}-{$attribute}"] = $errors;
                         }
-                        $userAnswer->save(false);
+                        $userAnswer->save();
                     }
                 }
                 $question->refresh();
@@ -93,7 +93,7 @@ class QuestionController extends Controller
                     foreach ($userAnswer->getErrors() as $attribute => $errors) {
                         $result["surveyuseranswer-{$question->survey_question_id}-{$attribute}"] = $errors;
                     }
-                    $userAnswer->save(false);
+                        $userAnswer->save();
                 }
             }
         }

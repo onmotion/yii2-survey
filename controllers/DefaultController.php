@@ -1,16 +1,13 @@
 <?php
 
-namespace common\modules\survey\controllers;
+namespace onmotion\survey\controllers;
 
-use common\modules\survey\models\search\SurveySearch;
-use common\modules\survey\models\search\SurveyStatSearch;
-use common\modules\survey\models\Survey;
-use common\modules\survey\models\SurveyAnswer;
-use common\modules\survey\models\SurveyQuestion;
-use common\modules\survey\models\SurveyStat;
-use common\modules\survey\SurveyInterface;
-use common\modules\survey\User;
-
+use onmotion\survey\models\search\SurveySearch;
+use onmotion\survey\models\search\SurveyStatSearch;
+use onmotion\survey\models\Survey;
+use onmotion\survey\models\SurveyAnswer;
+use onmotion\survey\models\SurveyQuestion;
+use onmotion\survey\models\SurveyStat;
 use Imagine\Image\Box;
 use Yii;
 use yii\base\Model;

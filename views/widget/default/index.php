@@ -7,7 +7,7 @@
  */
 
 use cenotia\components\modal\RemoteModal;
-use common\modules\survey\models\SurveyStat;
+use onmotion\survey\models\SurveyStat;
 use kartik\editable\Editable;
 use kartik\helpers\Html;
 use wbraganca\dynamicform\DynamicFormWidget;
@@ -16,7 +16,7 @@ use yii\bootstrap\Modal;
 use yii\helpers\Url;
 
 /* @var $this yii\web\View */
-/* @var $survey \common\modules\survey\models\Survey */
+/* @var $survey \onmotion\survey\models\Survey */
 /* @var $stat SurveyStat */
 
 
@@ -54,19 +54,19 @@ echo Html::csrfMetaTags();
                 <div class="survey-infopane" data-spy="affix" data-offset-top="260">
                     <?php
                     if ($stat && $stat->survey_stat_is_done) {
-                        $status = 'Награда получена';
+                        $status = 'Completed';
                         $statusClass = 'is-done';
                     } else {
                         $statusClass = $survey->getStatus();
                         switch ($statusClass) {
                             case 'active':
-                                $status = 'Активный';
+                                $status = 'Active';
                                 break;
                             case 'expired':
-                                $status = 'Срок истек';
+                                $status = 'Expired';
                                 break;
                             case 'closed':
-                                $status = 'Закрыт';
+                                $status = 'Closed';
                                 break;
                             default:
                                 $status = 'undefined';
@@ -78,7 +78,7 @@ echo Html::csrfMetaTags();
                     echo Html::endTag('div');
 
 
-                    if ($survey->survey_wallet > 0) {
+                    if ($survey->survey_wallet > 0 && \Yii::$app->user->identity->hasWallet()) {
                         ?>
                         <div class="infopane-block">
                             <p>Баллов в кошелек:</p>
@@ -128,7 +128,7 @@ echo Html::csrfMetaTags();
 <?php
 $this->registerJs(<<<JS
 $(document).ready(function (e) {
-    $.fn.survey();
+   // $.fn.survey();
     $.fn.surveyWidget({id: $survey->survey_id});
 });
 JS

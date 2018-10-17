@@ -6,7 +6,7 @@
  * Time: 14:18
  */
 
-namespace common\modules\survey;
+namespace onmotion\survey;
 
 
 use yii\web\AssetBundle;
@@ -21,7 +21,7 @@ class SurveyAsset extends AssetBundle
     }
 
     public $publishOptions = [
-       // 'forceCopy' => true //dev
+        'forceCopy' => YII_ENV_DEV //dev
     ];
 
     public $css = [

@@ -6,7 +6,7 @@
  * Time: 15:43
  */
 
-namespace common\modules\survey;
+namespace onmotion\survey;
 
 
 interface SurveyInterface

@@ -12,7 +12,7 @@ use yii\widgets\Pjax;
 
 
 /* @var $this yii\web\View */
-/* @var $question \common\modules\survey\models\SurveyQuestion */
+/* @var $question \onmotion\survey\models\SurveyQuestion */
 
 
 Pjax::begin([
@@ -31,7 +31,7 @@ echo Html::beginTag('div', ['class' => 'survey-question-view-wrap']);
 
 echo Html::tag('h4', $question->survey_question_name);
 
-echo Html::a(\Yii::t('survey', '<i class="fa fa-pencil" aria-hidden="true"></i>'), Url::toRoute(['question/edit', 'id' => $question->survey_question_id]), [
+echo Html::a(\Yii::t('survey', '<span class="glyphicon glyphicon-pencil"></span>'), Url::toRoute(['question/edit', 'id' => $question->survey_question_id]), [
     'class' => 'btn btn-info pull-right btn-edit',
 ]);
 echo Html::endTag('div');

@@ -1,6 +1,6 @@
 <?php
 
-namespace common\modules\survey\models;
+namespace onmotion\survey\models;
 
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -70,6 +70,6 @@ class SurveyType extends \yii\db\ActiveRecord
      */
     public function getSurveyQuestions()
     {
-        return $this->hasMany(SurveyQuestion::className(), ['survey_question_type' => 'survey_type_id']);
+        return $this->hasMany(SurveyQuestion::class, ['survey_question_type' => 'survey_type_id']);
     }
 }

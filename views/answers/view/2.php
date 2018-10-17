@@ -6,12 +6,12 @@
  * Time: 13:59
  */
 
-use common\modules\survey\models\SurveyUserAnswer;
+use onmotion\survey\models\SurveyUserAnswer;
 use yii\bootstrap\Progress;
 use yii\helpers\Html;
 
 
-/** @var $question \common\modules\survey\models\SurveyQuestion */
+/** @var $question \onmotion\survey\models\SurveyQuestion */
 /** @var $form \yii\widgets\ActiveForm */
 
 $totalVotesCount = $question->getTotalUserAnswersCount();

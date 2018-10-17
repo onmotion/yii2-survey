@@ -1,6 +1,6 @@
 <?php
 
-namespace common\modules\survey\models;
+namespace onmotion\survey\models;
 
 
 use Yii;
@@ -93,10 +93,10 @@ class SurveyQuestion extends \yii\db\ActiveRecord
             [['survey_question_type'], 'filter', 'filter' => 'intval'],
             [['survey_question_can_skip', 'survey_question_show_descr', 'survey_question_is_scorable'], 'boolean'],
             [['survey_question_can_skip', 'survey_question_show_descr', 'survey_question_is_scorable'], 'filter', 'filter' => 'boolval'],
-            [['survey_question_name'], 'string', 'max' => 45],
+            [['survey_question_name'], 'string', 'max' => 130],
             [['survey_question_name'], 'required'],
-            [['survey_question_survey_id'], 'exist', 'skipOnError' => true, 'targetClass' => Survey::className(), 'targetAttribute' => ['survey_question_survey_id' => 'survey_id']],
-            [['survey_question_type'], 'exist', 'skipOnError' => true, 'targetClass' => SurveyType::className(), 'targetAttribute' => ['survey_question_type' => 'survey_type_id']],
+            [['survey_question_survey_id'], 'exist', 'skipOnError' => true, 'targetClass' => Survey::class, 'targetAttribute' => ['survey_question_survey_id' => 'survey_id']],
+            [['survey_question_type'], 'exist', 'skipOnError' => true, 'targetClass' => SurveyType::class, 'targetAttribute' => ['survey_question_type' => 'survey_type_id']],
         ];
     }
 
@@ -144,7 +144,7 @@ class SurveyQuestion extends \yii\db\ActiveRecord
      */
     public function getAnswers()
     {
-        return $this->hasMany(SurveyAnswer::className(), ['survey_answer_question_id' => 'survey_question_id'])
+        return $this->hasMany(SurveyAnswer::class, ['survey_answer_question_id' => 'survey_question_id'])
             ->orderBy(['survey_answer_sort' => SORT_ASC, 'survey_answer_id' => SORT_ASC]);
     }
 
@@ -153,7 +153,7 @@ class SurveyQuestion extends \yii\db\ActiveRecord
      */
     public function getSurvey()
     {
-        return $this->hasOne(Survey::className(), ['survey_id' => 'survey_question_survey_id']);
+        return $this->hasOne(Survey::class, ['survey_id' => 'survey_question_survey_id']);
     }
 
     /**
@@ -161,7 +161,7 @@ class SurveyQuestion extends \yii\db\ActiveRecord
      */
     public function getQuestionType()
     {
-        return $this->hasOne(SurveyType::className(), ['survey_type_id' => 'survey_question_type']);
+        return $this->hasOne(SurveyType::class, ['survey_type_id' => 'survey_question_type']);
     }
 
     /**
@@ -169,7 +169,7 @@ class SurveyQuestion extends \yii\db\ActiveRecord
      */
     public function getUserAnswers()
     {
-        return $this->hasMany(SurveyUserAnswer::className(), ['survey_user_answer_question_id' => 'survey_question_id'])
+        return $this->hasMany(SurveyUserAnswer::class, ['survey_user_answer_question_id' => 'survey_question_id'])
             ->andOnCondition(['survey_user_answer_user_id' => \Yii::$app->user->getId()])
             ->indexBy('survey_user_answer_answer_id');
     }

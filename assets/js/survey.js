@@ -1,5 +1,6 @@
 ;(function ($) {
     "use strict";
+
     /**
      *
      */
@@ -8,7 +9,7 @@
         $(document).on('pjax:end', function (e, contents, options) {
             console.log(e);
             if (e.target.id === 'survey-questions-append') {
-                let appendContainer = $('#survey-questions-append').find('.survey-question-pjax-container');
+                var appendContainer = $('#survey-questions-append').find('.survey-question-pjax-container');
                 appendContainer.appendTo('#survey-questions');
             }
         });
@@ -29,10 +30,10 @@
 
         function pseudoSubmit(e) {
             e.preventDefault();
-            let $this = $(this);
-            let data = $this.data();
-            let action = data.action;
-            let $form = $this.closest('form');
+            var $this = $(this);
+            var data = $this.data();
+            var action = data.action;
+            var $form = $this.closest('form');
             console.log($form);
             if ($form && action) {
                 $form.attr('action', action).submit();
@@ -42,31 +43,31 @@
         }
 
         $(document).on('click', '.checkbox-updatable', function (e) {
-            let container = $(this).closest('[data-pjax-container]');
+            var container = $(this).closest('[data-pjax-container]');
             container.find('.update-question-btn').click();
         });
 
         $(document).on('click', '.submit-on-click', function (e) {
-            let container = $(this).closest('[data-pjax-container]');
+            var container = $(this).closest('[data-pjax-container]');
             container.find('button[type=submit]').click();
         });
 
 
         async function submitAllForms() {
-            let forms = [];
-            let $body =  $('body');
+            var forms = [];
+            var $body = $('body');
             $body.toggleClass('survey-loading');
-            let btn = $(this).find('button');
+            var btn = $(this).find('button');
             btn.prop('disabled', true);
-            let defaultText = btn.data('default-text') || '';
+            var defaultText = btn.data('default-text') || '';
             btn.html('<i class="fa fa-spinner fa-pulse fa-fw" aria-hidden="true"></i>');
-            let allFormsIsValid = true;
+            var allFormsIsValid = true;
 
             $(document).find('form.form-inline').each(function (i, el) {
                 forms.push($(el));
             });
 
-            for (let item of forms) {
+            for (var item of forms) {
                 try {
                     await confirmForm(item);
                 } catch (err) {
@@ -76,7 +77,7 @@
 
             if (allFormsIsValid) {
                 location.href = $('#save').data('action');
-            }else {
+            } else {
                 btn.prop('disabled', false);
                 btn.html(defaultText);
                 $body.toggleClass('survey-loading');
@@ -98,7 +99,7 @@
 
         function confirmForm(form) {
             return new Promise((resolve, reject) => {
-                let container = form.closest('[data-pjax-container]');
+                var container = form.closest('[data-pjax-container]');
                 form.submit();
                 container.on('afterValidate', function (event, messages, errorAttributes) {
                     if (errorAttributes.length > 0) {
@@ -117,7 +118,7 @@
         }
 
 
-        let showProgress;
+        var showProgress;
         showProgress = function showProgress(container) {
             try {
                 container.prepend('<div class="preloader"><div class="cssload-spin-box"></div></div>');
@@ -127,7 +128,7 @@
             $('.preloader').fadeIn();
         };
 
-        let hideProgress;
+        var hideProgress;
         (hideProgress = function hideProgress(container = null) {
             try {
                 if (container !== null) {
