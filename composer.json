@@ -17,7 +17,7 @@
     "yiisoft/yii2": ">=2.0.1",
     "cenotia/yii2-remote-modal": "^1.0",
     "kartik-v/yii2-dialog": "^1.0",
-    "uitrick/yii2-widget-upload-crop": "0.5.1",
+    "onmotion/yii2-widget-upload-crop": ">=0.5",
     "kartik-v/yii2-editable": "^1.7",
     "kartik-v/yii2-widget-datetimepicker": "^1.4",
     "vova07/yii2-imperavi-widget": "^2.0",
