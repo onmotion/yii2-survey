@@ -26,15 +26,9 @@
     "kartik-v/yii2-slider": "^1.3",
     "kartik-v/yii2-helpers": "^1.3"
   },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/onmotion/yii2-widget-upload-crop"
-    }
-  ],
   "autoload": {
     "psr-4": {
-      "onmotion\\assessments\\": ""
+      "onmotion\\survey\\": ""
     }
   }
 }
