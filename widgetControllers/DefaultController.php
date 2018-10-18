@@ -101,12 +101,10 @@ class DefaultController extends Controller
 
         \Yii::$app->response->format = Response::FORMAT_JSON;
         return [
-            'title' => '<div class="text-center"><h2>' . \Yii::t('survey', 'Наши поздравления!') . '</h2><img src="/img/common/svg/gifts.svg" alt="#"></div>',
+            'title' => '<div class="text-center"><h2>' . \Yii::t('survey', 'Thank you!'),
             'content' => $this->renderPartial('@surveyRoot/views/widget/default/success', ['survey' => $survey]),
             'footer' =>
-            //  Html::button('Закрыть', ['class' => 'btn btn-default pull-left', 'data-dismiss' => "modal"]) .
-                Html::a('Другие опросы', Url::to(['/additional-activity/surveys']), ['class' => 'btn btn-default'])
-                . Html::a('Личный кабинет', Url::to(['/user/account']), ['class' => 'btn btn-success'])
+              Html::button('Ok', ['class' => 'btn btn-default pull-left', 'data-dismiss' => "modal"]) 
         ];
     }
 

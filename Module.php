@@ -5,6 +5,7 @@ namespace onmotion\survey;
 use yii\base\UserException;
 use yii\helpers\FileHelper;
 use yii\helpers\Url;
+use yii\web\NotFoundHttpException;
 
 /**
  * survey module definition class
@@ -33,7 +34,6 @@ class Module extends \yii\base\Module
                 ? 'onmotion\survey\controllers'
                 : 'onmotion\survey\widgetControllers';
         }
-
 
         parent::init();
 

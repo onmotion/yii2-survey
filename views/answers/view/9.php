@@ -7,7 +7,7 @@
  */
 
 use onmotion\survey\models\SurveyUserAnswer;
-use kartik\widgets\DateTimePicker;
+use kartik\datetime\DateTimePicker;
 use vova07\imperavi\Widget;
 use yii\helpers\Html;
 use yii\helpers\Url;

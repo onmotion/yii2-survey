@@ -6,7 +6,6 @@ use onmotion\survey\models\Survey;
 use onmotion\survey\models\SurveyAnswer;
 use onmotion\survey\models\SurveyQuestion;
 use onmotion\survey\models\SurveyType;
-use kartik\widgets\ActiveForm;
 use vova07\imperavi\actions\GetAction;
 use yii\base\Event;
 use yii\base\Model;
@@ -111,7 +110,7 @@ class QuestionController extends Controller
             && (count($answersData) === count($question->answers))
             && Model::loadMultiple($question->answers, $answersData, '')) {
             foreach ($question->answers as $i => $model) {
-                if (!$questionIsChanged && $action !== 'delete-answer') {
+                if (!$questionIsChanged || $action !== 'delete-answer') {
                     $model->validate();
                     foreach ($model->getErrors() as $attribute => $errors) {
                         $result["surveyanswer-{$question->survey_question_id}-{$i}-{$attribute}"] = $errors;
@@ -173,7 +172,7 @@ class QuestionController extends Controller
             $pevAnswer = $answers[$after] ? $answers[$after] : null;
             $sort = ArrayHelper::getValue($pevAnswer, 'survey_answer_sort', 0) + 1;
 
-            //moving all newt answers forward
+            //moving all new answers forward
             SurveyAnswer::updateAll(['survey_answer_sort' => new Expression('survey_answer_sort+1')],
                 ['AND', ['>=', 'survey_answer_sort', $sort], ['survey_answer_question_id' => $question->survey_question_id]]);
         }

@@ -47,7 +47,7 @@ BootstrapPluginAsset::register($this);
                             ?>></div>
                             <div class="description">
                                 <div class="name-wrap">
-                                    <a href="<?= Url::toRoute(['default/view/' . $survey->survey_id]) ?>"
+                                    <a href="<?= Url::toRoute(['default/view/', 'id' => $survey->survey_id]) ?>"
                                        class="name" data-pjax="0"
                                        title="<?= Html::encode($survey->survey_name) ?>"><?= Html::encode($survey->survey_name) ?></a>
                                 </div>
@@ -61,7 +61,7 @@ BootstrapPluginAsset::register($this);
                                               title="<?= \Yii::t('survey', 'Questions count') ?>"><?= $survey->getQuestions()->count() ?></span>
                                     </div>
                                     <div class="survey-actions">
-                                        <a href="<?= Url::toRoute('default/update/' . $survey->survey_id) ?>"
+                                        <a href="<?= Url::toRoute(['default/update/', 'id' => $survey->survey_id]) ?>"
                                            class="btn btn-info btn-xs" data-pjax="0"
                                            title="edit"><span class="glyphicon glyphicon-pencil"></span></a>
                                         <?php

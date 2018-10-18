@@ -775,6 +775,7 @@ input[type=radio].css-radio + label.css-label {
 #survey-modal .modal-content .modal-header {
   background: #82be50; }
   #survey-modal .modal-content .modal-header h2 {
+    color: #fff;
     font-size: 30px; }
   #survey-modal .modal-content .modal-header img {
     margin: 30px auto 20px auto; }

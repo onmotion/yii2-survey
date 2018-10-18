@@ -8,7 +8,6 @@ use onmotion\survey\models\SurveyQuestion;
 use onmotion\survey\models\SurveyStat;
 use onmotion\survey\models\SurveyType;
 use onmotion\survey\models\SurveyUserAnswer;
-use kartik\widgets\ActiveForm;
 use vova07\imperavi\actions\GetAction;
 use yii\base\Event;
 use yii\base\Model;

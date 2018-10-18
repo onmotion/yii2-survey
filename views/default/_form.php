@@ -9,7 +9,7 @@
 use kartik\dialog\Dialog;
 use kartik\editable\Editable;
 use kartik\helpers\Html;
-use uitrick\yii2\widget\upload\crop\UploadCrop;
+use onmotion\yii2\widget\upload\crop\UploadCrop;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use yii\widgets\Pjax;
