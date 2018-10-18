@@ -2,6 +2,12 @@
 Survey module for Yii2 application
 --
 
+[![Latest Stable Version](https://poser.pugx.org/onmotion/yii2-survey/v/stable)](https://packagist.org/packages/onmotion/yii2-survey)
+[![Total Downloads](https://poser.pugx.org/onmotion/yii2-survey/downloads)](https://packagist.org/packages/onmotion/yii2-survey)
+[![Monthly Downloads](https://poser.pugx.org/onmotion/yii2-survey/d/monthly)](https://packagist.org/packages/onmotion/yii2-survey)
+[![License](https://poser.pugx.org/onmotion/yii2-survey/license)](https://packagist.org/packages/onmotion/yii2-survey)
+
+
 >! Note: the module under active developing, so it may have vary errors and unstable work.
 > Highly appreciate your PR.
 
