@@ -39,7 +39,6 @@ class DefaultController extends Controller
         if ($question->survey_question_type === SurveyType::TYPE_MULTIPLE
             || $question->survey_question_type === SurveyType::TYPE_RANKING
             || $question->survey_question_type === SurveyType::TYPE_MULTIPLE_TEXTBOX
-            || $question->survey_question_type === SurveyType::TYPE_DATE_TIME
         ) {
             if (count($userAnswers) < 2) {
                 return false;
@@ -62,6 +61,7 @@ class DefaultController extends Controller
             || $question->survey_question_type === SurveyType::TYPE_SLIDER
             || $question->survey_question_type === SurveyType::TYPE_SINGLE_TEXTBOX
             || $question->survey_question_type === SurveyType::TYPE_COMMENT_BOX
+            || $question->survey_question_type === SurveyType::TYPE_DATE_TIME
         ) {
             if (empty(current($userAnswers))) {
                 return false;
@@ -85,13 +85,14 @@ class DefaultController extends Controller
         $survey = $this->findModel($id);
         $stat = SurveyStat::findOne(['survey_stat_survey_id' => $id, 'survey_stat_user_id' => \Yii::$app->user->getId()]);
         if ($stat === null) {
-            throw new NotFoundHttpException('The requested survey stat does not exist.');
+            throw new UserException('The requested survey stat does not exist.');
         } elseif ($stat->survey_stat_is_done) {
-            throw new NotFoundHttpException('The survey has already been completed.');
+            throw new UserException('The survey has already been completed.');
         }
         foreach ($survey->questions as $question) {
             if (!$this->validateQuestion($question)) {
-                throw new NotFoundHttpException('An error has been occurred during validating.');
+                var_dump($question->getFirstErrors());
+                throw new UserException('An error has been occurred during validating.');
             }
         }
         //all validation is passed.
