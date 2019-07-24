@@ -79,8 +79,8 @@ BootstrapPluginAsset::register($this);
                             </div>
                         </div>
                         <div class="second-line">
-                            <span>Автор: <?= $survey->getAuthorName() ?></span>
-                            <span class="date">Добавлено: <?= \Yii::$app->formatter->asDate($survey->survey_created_at) ?></span>
+                            <span>Author: <?= $survey->getAuthorName() ?></span>
+                            <span class="date">Created At: <?= \Yii::$app->formatter->asDate($survey->survey_created_at) ?></span>
                         </div>
                     </div>
                 </div>
