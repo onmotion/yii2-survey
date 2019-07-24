@@ -19,6 +19,6 @@ use yii\helpers\Url;
 ?>
 
 
-<h4>Опрос закрыт</h4>
+<h4>Survey Closed</h4>
 
 
