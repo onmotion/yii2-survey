@@ -53,6 +53,7 @@ class QuestionController extends Controller
                 || $question->survey_question_type === SurveyType::TYPE_RANKING
                 || $question->survey_question_type === SurveyType::TYPE_MULTIPLE_TEXTBOX
                 || $question->survey_question_type === SurveyType::TYPE_DATE_TIME
+                || $question->survey_question_type === SurveyType::TYPE_CALENDAR
             ) {
                 foreach ($question->answers as $i => $answer) {
                     $userAnswer = isset($userAnswers[$answer->survey_answer_id]) ? $userAnswers[$answer->survey_answer_id] : (new SurveyUserAnswer([

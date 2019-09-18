@@ -39,6 +39,7 @@ class DefaultController extends Controller
         if ($question->survey_question_type === SurveyType::TYPE_MULTIPLE
             || $question->survey_question_type === SurveyType::TYPE_RANKING
             || $question->survey_question_type === SurveyType::TYPE_MULTIPLE_TEXTBOX
+            || $question->survey_question_type === SurveyType::TYPE_CALENDAR
         ) {
             if (count($userAnswers) < 2) {
                 return false;
