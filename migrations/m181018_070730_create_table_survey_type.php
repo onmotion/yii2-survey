@@ -26,7 +26,8 @@ class m181018_070730_create_table_survey_type extends Migration
             ['Single textbox', 'Add a single textbox to your survey when you want respondents to write in a short text or numerical answer to your question.'],
             ['Multiple textboxes', 'Add multiple textboxes to your survey when you want respondents to write in more than one short text or numerical answer to your question.'],
             ['Comment box', 'Use the comment or essay box to collect open-ended, written feedback from respondents.'],
-            ['Date/Time', 'Ask respondents to enter a specific date and/or time.']
+            ['Date/Time', 'Ask respondents to enter a specific date and/or time.'],
+            ['Calendar', 'Ask respondents to choose better date/time for a meeting.']
         ]);
 
     }
