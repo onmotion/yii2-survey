@@ -13,6 +13,7 @@ use yii\helpers\Url;
 
 /** @var $question \onmotion\survey\models\SurveyQuestion */
 /** @var $form \yii\widgets\ActiveForm */
+/** @var $readonly boolean */
 
 $userAnswers = $question->userAnswers;
 
@@ -32,7 +33,7 @@ foreach ($question->answers as $i => $answer) {
             'template' => "<div class='survey-questions-form-field checkbox-group'>{input}{label}</div>\n{hint}\n{error}",
             'labelOptions' => ['class' => 'css-label', 'label' => $label],
         ]
-    )->checkbox(['class' => 'css-checkbox'], false);
+    )->checkbox(['class' => 'css-checkbox', 'disabled' => $readonly], false);
 
     echo Html::tag('br', '');
 }

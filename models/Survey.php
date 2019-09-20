@@ -32,8 +32,12 @@ use yii\helpers\ArrayHelper;
  * @property SurveyUserAnswer[] $surveyUserAnswers
  * @property SurveyQuestion[] $questions
  * @property SurveyStat[] $stats
- * @property User[] $restrictedUsers
+ * @property-read User[] $restrictedUsers
  * @property Badge $badge
+ *
+ * @property-read int[] $restrictedUserIds
+ * @property-read string[] $restrictedUserNames
+ * @property-read boolean $isAccessibleByCurrentUser
  */
 class Survey extends \yii\db\ActiveRecord
 {
@@ -215,5 +219,13 @@ class Survey extends \yii\db\ActiveRecord
 
     public function getRestrictedUserNames() {
     	return ArrayHelper::map($this->restrictedUsers, 'id', 'fullname');
+    }
+
+    public function isAccessibleBy($userId) {
+	    return ($this->survey_is_visible && (!$this->survey_is_private || in_array($userId, $this->restrictedUserIds)));
+    }
+
+    public function getIsAccessibleByCurrentUser() {
+    	return $this->isAccessibleBy(\Yii::$app->user->id);
     }
 }

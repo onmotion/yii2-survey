@@ -104,8 +104,12 @@ class DefaultController extends Controller
 
         if (\Yii::$app->request->isPjax) {
             $dataProvider->pagination->route = Url::toRoute(['default/respondents']);
-            return $this->renderAjax('respondents',
-                compact('searchModel', 'dataProvider', 'surveyId'));
+            return $this->renderAjax('respondents', [
+            	'searchModel' => $searchModel,
+	            'dataProvider' => $dataProvider,
+	            'surveyId' => $surveyId,
+	            'withUserSearch' => $this->allowUserSearch()
+            ]);
         }
 
         \Yii::$app->response->format = Response::FORMAT_JSON;

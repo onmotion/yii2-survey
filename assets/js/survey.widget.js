@@ -158,6 +158,12 @@
                     success: function success(response) {
                         btn.remove();
                         createModal();
+
+                        forms.forEach(f => {
+                            f.find(':input').prop('disabled', true);
+                            f.find('input[data-krajee-slider]').slider('disable');
+                        });
+
                         var modal = $('#survey-modal');
                         modal.find('.modal-header').html(response.title);
                         modal.find('.modal-body').html(response.content);

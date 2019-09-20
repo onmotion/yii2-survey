@@ -51,7 +51,14 @@ class SurveyUserAnswer extends \yii\db\ActiveRecord
                 return ($model->question->survey_question_can_skip == false && $model->question->survey_question_type === SurveyType::TYPE_COMMENT_BOX);
             }, 'message' => \Yii::t('survey', 'You must enter an answer')],
 
-            [['survey_user_answer_value', 'survey_user_answer_text'], 'default', 'value' => null],
+	        [['survey_user_answer_value', 'survey_user_answer_text'], function ($attribute, $params, $validator) {
+		        /** @var $this SurveyUserAnswer */
+		        if (!$this->question->survey->isAccessibleByCurrentUser) {
+			        $this->addError($attribute, \Yii::t('survey', 'You are not allowed to answer this survey'));
+		        }
+	        }],
+
+	        [['survey_user_answer_value', 'survey_user_answer_text'], 'default', 'value' => null],
             [['survey_user_answer_answer_id'], 'exist', 'skipOnError' => true, 'targetClass' => SurveyAnswer::class, 'targetAttribute' => ['survey_user_answer_answer_id' => 'survey_answer_id']],
             [['survey_user_answer_question_id'], 'exist', 'skipOnError' => true, 'targetClass' => SurveyQuestion::class, 'targetAttribute' => ['survey_user_answer_question_id' => 'survey_question_id']],
             [['survey_user_answer_survey_id'], 'exist', 'skipOnError' => true, 'targetClass' => Survey::class, 'targetAttribute' => ['survey_user_answer_survey_id' => 'survey_id']],
