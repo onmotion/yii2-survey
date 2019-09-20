@@ -7,18 +7,21 @@
  */
 
 use cenotia\components\modal\RemoteModal;
+use kartik\select2\Select2;
 use onmotion\survey\models\search\SurveyStatSearch;
 use kartik\editable\Editable;
 use kartik\helpers\Html;
 use wbraganca\dynamicform\DynamicFormWidget;
 use yii\bootstrap\BootstrapPluginAsset;
 use yii\helpers\Url;
+use yii\web\JsExpression;
 use yii\widgets\ActiveForm;
 use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $survey \onmotion\survey\models\Survey */
 /* @var $respondentsCount integer */
+/* @var $withUserSearch boolean */
 
 $this->title = Yii::t('survey', 'Survey') . ' - ' . $survey->survey_name;
 
@@ -32,9 +35,12 @@ BootstrapPluginAsset::register($this);
                 <h4><?= $survey->survey_name; ?></h4>
                 <div>
                     <div class="survey-labels">
-                        <span class="survey-label respondents-toggle" data-toggle="tooltip"
+                        <a href="<?= Url::toRoute(['default/update/', 'id' => $survey->survey_id]) ?>"
+                           class="btn btn-info btn-xs survey-label" data-pjax="0"
+                           title="edit"><span class="glyphicon glyphicon-pencil"></span></a>
+                        <span class="survey-label btn btn-info btn-xs respondents-toggle" data-toggle="tooltip"
                               title="<?= \Yii::t('survey', 'Respondents') ?>"><?= \Yii::t('survey', 'Number of respondents') ?>: <?= $survey->getRespondentsCount() ?></span>
-                        <span class="survey-label" data-toggle="tooltip"
+                        <span class="survey-label btn btn-info btn-xs" data-toggle="tooltip"
                               title="<?= \Yii::t('survey', 'Questions') ?>"><?= $survey->getQuestions()->count() ?></span>
                     </div>
 
@@ -42,8 +48,8 @@ BootstrapPluginAsset::register($this);
 
             </div>
             <div class="subcontainer">
-
                 <?php
+                echo Html::beginTag('div', ['class' => 'row']);
                 echo Html::beginTag('div', ['class' => 'col-md-6']);
                 echo Html::label(Yii::t('survey', 'Expired at') . ': ', 'survey-survey_expired_at');
                 echo Editable::widget([
@@ -69,9 +75,8 @@ BootstrapPluginAsset::register($this);
                 echo Html::endTag('div');
 
                 echo Html::beginTag('div', ['class' => 'col-md-6']);
-
                 echo Html::endTag('div');
-                echo Html::tag('div', '', ['class' => 'clearfix']);
+                echo Html::endTag('div');
 
                 Pjax::begin([
                     'id' => 'survey-pjax',
@@ -96,25 +101,67 @@ BootstrapPluginAsset::register($this);
                     ],
                 ]);
 
+                echo Html::beginTag('div', ['class' => 'row']);
                 echo Html::beginTag('div', ['class' => 'col-md-12']);
                 echo $form->field($survey, "survey_descr", ['template' => "<div class='survey-form-field'>{label}{input}</div>",]
                 )->textarea(['rows' => 3]);
                 echo Html::tag('div', '', ['class' => 'clearfix']);
                 echo Html::endTag('div');
+                echo Html::endTag('div');
 
-                echo Html::beginTag('div', ['class' => 'col-md-6']);
+                echo Html::beginTag('div', ['class' => 'row']);
+                echo Html::beginTag('div', ['class' => 'col-md-3']);
                 echo $form->field($survey, "survey_is_closed", ['template' => "<div class='survey-form-field submit-on-click'>{input}{label}</div>",]
                 )->checkbox(['class' => 'checkbox danger'], false);
                 echo Html::tag('div', '', ['class' => 'clearfix']);
                 echo $form->field($survey, "survey_is_pinned", ['template' => "<div class='survey-form-field submit-on-click'>{input}{label}</div>",]
                 )->checkbox(['class' => 'checkbox'], false);
+                echo Html::tag('div', '', ['class' => 'clearfix']);
+                echo $form->field($survey, "survey_is_visible", ['template' => "<div class='survey-form-field submit-on-click'>{input}{label}</div>",]
+                )->checkbox(['class' => 'checkbox'], false);
+				if ($withUserSearch) {
+					echo Html::tag('div', '', ['class' => 'clearfix']);
+					echo $form->field($survey,
+						"survey_is_private",
+						['template' => "<div class='survey-form-field submit-on-click'>{input}{label}</div>",]
+					)->checkbox(['class' => 'checkbox danger'], false);
+				}
                 echo Html::endTag('div');
 
-                echo Html::beginTag('div', ['class' => 'col-md-6']);
+                echo Html::beginTag('div', ['class' => 'col-md-9']);
                 echo $form->field($survey, "survey_tags")->input('text', ['placeholder' => 'Comma separated']);
-
+				if ($withUserSearch) {
+					echo Html::tag('div', '', ['class' => 'clearfix']);
+					echo $form->field($survey, 'restrictedUserIds')->widget(Select2::classname(),
+						[
+							'initValueText' => $survey->restrictedUsernames, // set the initial display text
+							'options' => ['placeholder' => \Yii::t('survey', 'Restrict survey to selected user...')],
+							'pluginOptions' => [
+								'allowClear' => true,
+								'minimumInputLength' => 3,
+								'language' => [
+									'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+								],
+								'ajax' => [
+									'url' => Url::toRoute(['default/search-respondents-by-token']),
+									'dataType' => 'json',
+									'data' => new JsExpression('function(params) { return {token:params.term}; }')
+								],
+								'multiple' => true,
+								'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+								'templateResult' => new JsExpression('function(city) { return city.text; }'),
+								'templateSelection' => new JsExpression('function (city) { return city.text; }'),
+							],
+							'pluginEvents' => [
+								'change' => new JsExpression('function() {         
+					                var container = $(this).closest(\'[data-pjax-container]\');
+			                        container.find(\'button[type=submit]\').click(); 
+			                    }')
+							]
+						]);
+				}
                 echo Html::endTag('div');
-
+                echo Html::endTag('div');
 
                 echo Html::submitButton('', ['class' => 'hidden']);
                 echo Html::tag('div', '', ['class' => 'clearfix']);
@@ -148,7 +195,7 @@ BootstrapPluginAsset::register($this);
     $surveyId = $survey->survey_id;
 
     echo $this->render('respondents',
-        compact('searchModel', 'dataProvider', 'surveyId'));
+        compact('searchModel', 'dataProvider', 'surveyId', 'withUserSearch'));
     ?>
 </div>
 

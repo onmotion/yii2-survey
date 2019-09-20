@@ -304,7 +304,6 @@ $questionHeader: #374141;
 
     .select2-container--krajee {
       display: inline-block;
-      width: inherit !important;
       min-width: 200px;
 
       .select2-selection--single {
@@ -787,7 +786,6 @@ $questionHeader: #374141;
 #survey-widget, #survey-view {
   #survey-title {
     align-items: flex-start;
-    height: 300px;
     display: block;
     background: $secondaryColor;
 

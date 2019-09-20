@@ -13,8 +13,12 @@ use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $survey \onmotion\survey\models\Survey */
+/* @var $withUserSearch boolean */
 
 $this->title = Yii::t('survey', 'Update survey');
 
 
-echo $this->render('_form', ['survey' => $survey]);
+echo $this->render('_form', [
+	'survey' => $survey,
+	'withUserSearch' => $withUserSearch
+]);

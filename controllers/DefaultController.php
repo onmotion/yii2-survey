@@ -9,6 +9,7 @@ use onmotion\survey\models\SurveyAnswer;
 use onmotion\survey\models\SurveyQuestion;
 use onmotion\survey\models\SurveyStat;
 use Imagine\Image\Box;
+use onmotion\survey\SurveyInterface;
 use Yii;
 use yii\base\Model;
 use yii\base\UserException;
@@ -70,7 +71,12 @@ class DefaultController extends Controller
 
         $dataProvider->pagination->pageSize = 10;
 
-        return $this->render('view', ['survey' => $survey, 'searchModel' => $searchModel, 'dataProvider' => $dataProvider]);
+        return $this->render('view', [
+        	'survey' => $survey,
+	        'searchModel' => $searchModel,
+	        'dataProvider' => $dataProvider,
+	        'withUserSearch' => $this->allowUserSearch()
+        ]);
     }
 
     public function actionCreate()
@@ -81,7 +87,10 @@ class DefaultController extends Controller
         $survey->save(false);
         \Yii::$app->session->set('surveyUploadsSubpath', $survey->survey_id);
 
-        return $this->render('create', ['survey' => $survey]);
+        return $this->render('create', [
+        	'survey' => $survey,
+	        'withUserSearch' => $this->allowUserSearch()
+        ]);
     }
 
     public function actionRespondents($surveyId)
@@ -121,7 +130,16 @@ class DefaultController extends Controller
     {
         $userClass = $this->module->userClass;
         $userList = $userClass::actionGetRespondentsByToken($token);
-        $userList = ArrayHelper::index($userList, 'id');
+        $userList = ArrayHelper::map(
+        	$userList,
+	        'id',
+	        function ($user) {
+	            return [
+	                'id' => $user->id,
+	                'text' => $user->fullname,
+	                'isAssigned' => false
+		        ];
+	        });
         $ids = ArrayHelper::getColumn($userList, 'id');
         $assignedRespondents = SurveyStat::find()->where(['survey_stat_survey_id' => $surveyId])
             ->andWhere(['survey_stat_user_id' => $ids])->asArray()->all();
@@ -131,7 +149,34 @@ class DefaultController extends Controller
         }
 
         return json_encode($userList);
+    }
 
+   /**
+     * Returns user models founded by token
+     *
+     * @param $token string
+     * @param $surveyId
+     * @return User
+     */
+    public function actionSearchRespondentsByToken($token)
+    {
+        $userClass = $this->module->userClass;
+        $userList = $userClass::actionGetRespondentsByToken($token);
+        $userList = ArrayHelper::map(
+        	$userList,
+	        'id',
+	        function ($user) {
+	            return [
+	                'id' => $user->id,
+	                'text' => $user->fullname,
+	                'isAssigned' => false
+		        ];
+	        });
+        $ids = ArrayHelper::getColumn($userList, 'id');
+
+        return json_encode([
+        	'results' => array_values($userList)
+        ]);
     }
 
     /**
@@ -160,19 +205,34 @@ class DefaultController extends Controller
 
     public function actionUpdate($id)
     {
-
         $survey = $this->findModel($id);
         \Yii::$app->session->set('surveyUploadsSubpath', $id);
 
         if (\Yii::$app->request->isPjax) {
-            $post = \Yii::$app->request->post();
-            if ($survey->load($post) && $survey->validate()) {
+            if ($survey->load(\Yii::$app->request->post()) && $survey->validate()) {
                 $survey->save();
-                return $this->renderAjax('update', ['survey' => $survey]);
+	            $survey->unlinkAll('restrictedUsers', true);
+
+	            $post = \Yii::$app->request->post('Survey');
+	            if (array_key_exists('restrictedUserIds', $post) && is_array($post['restrictedUserIds']))
+	            {
+		            $userClass = \Yii::$app->user->identityClass;
+		            $restrictedUsers = $userClass::findAll($post['restrictedUserIds']);
+		            foreach ($restrictedUsers as $restrictedUser) {
+			            $survey->link('restrictedUsers', $restrictedUser);
+		            }
+	            }
+                return $this->renderAjax('update', [
+                	'survey' => $survey,
+	                'withUserSearch' => $this->allowUserSearch()
+                ]);
             }
         }
 
-        return $this->render('update', ['survey' => $survey]);
+        return $this->render('update', [
+        	'survey' => $survey,
+	        'withUserSearch' => $this->allowUserSearch()
+        ]);
     }
 
 
@@ -266,7 +326,14 @@ class DefaultController extends Controller
         return true;
     }
 
-    protected function findModel($id)
+	/**
+	 * @return bool
+	 */
+	public function allowUserSearch(): bool {
+		return is_subclass_of($this->module->userClass, SurveyInterface::class);
+	}
+
+	protected function findModel($id)
     {
         if (($model = Survey::findOne($id)) !== null) {
             return $model;
