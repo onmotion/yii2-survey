@@ -13,6 +13,21 @@ interface SurveyInterface
 {
     /**
      * Returns user models founded by token
+     * Example:
+     *
+     * static function actionGetRespondentsByToken($token)
+     * {
+     *
+     * $query = UserSearch::find()->joinWith('profile');
+     *
+     * $fullName = str_replace(' ', '% %', htmlentities($token));
+     * $query->andWhere("concat(profile.last_name, ' ', profile.first_name, ' ', profile.second_name) LIKE '%" . $fullName . "%'");
+     *
+     * $userList = $query->select(['id', "concat(profile.last_name, ' ', profile.first_name, ' ', profile.second_name, ' (', id, ')') as fullname"])
+     * ->all();
+     *
+     * return $userList;
+     * }
      *
      * @param $token string
      * @return User

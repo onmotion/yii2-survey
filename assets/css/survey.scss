@@ -648,6 +648,7 @@ $questionHeader: #374141;
 
   &.opened {
     right: 0;
+    z-index: 99999;
   }
 }
 
