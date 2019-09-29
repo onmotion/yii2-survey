@@ -13,6 +13,7 @@ use onmotion\survey\SurveyInterface;
 use Yii;
 use yii\base\Model;
 use yii\base\UserException;
+use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
 use yii\helpers\FileHelper;
 use yii\helpers\Html;
@@ -71,10 +72,16 @@ class DefaultController extends Controller
 
         $dataProvider->pagination->pageSize = 10;
 
+        $restrictedUserDataProvider = new ActiveDataProvider([
+        	'query' => $survey->getRestrictedUsers()
+        ]);
+	    $restrictedUserDataProvider->pagination->pageSize = 10;
+
         return $this->render('view', [
         	'survey' => $survey,
 	        'searchModel' => $searchModel,
 	        'dataProvider' => $dataProvider,
+	        'restrictedUserDataProvider' => $restrictedUserDataProvider,
 	        'withUserSearch' => $this->allowUserSearch()
         ]);
     }
@@ -123,6 +130,23 @@ class DefaultController extends Controller
         ];
     }
 
+	public function actionRestrictedUsers($surveyId)
+	{
+		$survey = $this->findModel($surveyId);
+		$restrictedUserDataProvider = new ActiveDataProvider([
+			'query' => $survey->getRestrictedUsers()
+		]);
+		$restrictedUserDataProvider->pagination->pageSize = 10;
+
+		return [
+			'title' => "RestrictedUsers",
+			'content' => $this->renderAjax('restrictedUsers',
+				compact('restrictedUserDataProvider', 'surveyId')
+			),
+			'footer' => Html::button('Close', ['class' => 'btn btn-default', 'data-dismiss' => "modal"])
+		];
+	}
+
     /**
      * Returns user models founded by token
      *
@@ -141,7 +165,8 @@ class DefaultController extends Controller
 	            return [
 	                'id' => $user->id,
 	                'text' => $user->fullname,
-	                'isAssigned' => false
+	                'isAssigned' => false,
+	                'isRestricted' => false
 		        ];
 	        });
         $ids = ArrayHelper::getColumn($userList, 'id');
@@ -207,7 +232,31 @@ class DefaultController extends Controller
         return $this->actionRespondents($surveyId);
     }
 
-    public function actionUpdate($id)
+	/**
+	 * @param $surveyId
+	 * @return bool
+	 */
+	public function actionAssignRestrictedUser($surveyId)
+	{
+		\Yii::$app->response->format = Response::FORMAT_JSON;
+		$userId = \Yii::$app->request->post('userId');
+
+		return Survey::assignRestrictedUser($userId, $surveyId);
+	}
+
+	/**
+	 * @param $surveyId
+	 * @return array|string
+	 */
+	public function actionUnassignRestrictedUser($surveyId)
+	{
+		$userId = \Yii::$app->request->post('userId');
+		Survey::unassignRestrictedUser($userId, $surveyId);
+
+		return $this->actionRestrictedUsers($surveyId);
+	}
+
+	public function actionUpdate($id)
     {
         $survey = $this->findModel($id);
         \Yii::$app->session->set('surveyUploadsSubpath', $id);

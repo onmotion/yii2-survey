@@ -41,7 +41,9 @@ BootstrapPluginAsset::register($this);
                         <span class="survey-label btn btn-info btn-xs respondents-toggle" data-toggle="tooltip"
                               title="<?= \Yii::t('survey', 'Respondents') ?>"><?= \Yii::t('survey', 'Number of respondents') ?>: <?= $survey->getRespondentsCount() ?></span>
                         <span class="survey-label btn btn-info btn-xs" data-toggle="tooltip"
-                              title="<?= \Yii::t('survey', 'Questions') ?>"><?= $survey->getQuestions()->count() ?></span>
+                              title="<?= \Yii::t('survey', 'Questions') ?>"><?= \Yii::t('survey', 'Questions') ?>: <?= $survey->getQuestions()->count() ?></span>
+	                    <span class="survey-label btn btn-info btn-xs restricted-users-toggle" data-toggle="tooltip"
+	                          title="<?= \Yii::t('survey', 'Restricted users') ?>"><?= \Yii::t('survey', 'Restricted users') ?>: <?= $survey->getRestrictedUsersCount() ?></span>
                     </div>
 
                 </div>
@@ -130,36 +132,6 @@ BootstrapPluginAsset::register($this);
 
                 echo Html::beginTag('div', ['class' => 'col-md-9']);
                 echo $form->field($survey, "survey_tags")->input('text', ['placeholder' => 'Comma separated']);
-				if ($withUserSearch) {
-					echo Html::tag('div', '', ['class' => 'clearfix']);
-					echo $form->field($survey, 'restrictedUserIds')->widget(Select2::classname(),
-						[
-							'initValueText' => $survey->restrictedUsernames, // set the initial display text
-							'options' => ['placeholder' => \Yii::t('survey', 'Restrict survey to selected user...')],
-							'pluginOptions' => [
-								'allowClear' => true,
-								'minimumInputLength' => 3,
-								'language' => [
-									'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-								],
-								'ajax' => [
-									'url' => Url::toRoute(['default/search-respondents-by-token']),
-									'dataType' => 'json',
-									'data' => new JsExpression('function(params) { return {token:params.term}; }')
-								],
-								'multiple' => true,
-								'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-								'templateResult' => new JsExpression('function(city) { return city.text; }'),
-								'templateSelection' => new JsExpression('function (city) { return city.text; }'),
-							],
-							'pluginEvents' => [
-								'change' => new JsExpression('function() {         
-					                var container = $(this).closest(\'[data-pjax-container]\');
-			                        container.find(\'button[type=submit]\').click(); 
-			                    }')
-							]
-						]);
-				}
                 echo Html::endTag('div');
                 echo Html::endTag('div');
 
@@ -196,6 +168,17 @@ BootstrapPluginAsset::register($this);
 
     echo $this->render('respondents',
         compact('searchModel', 'dataProvider', 'surveyId', 'withUserSearch'));
+    ?>
+</div>
+
+<div class="hidden-modal-right " id="restricted-users-modal">
+    <div class="close-btn">&times;</div>
+    <?php
+
+    $surveyId = $survey->survey_id;
+
+    echo $this->render('restrictedUsers',
+        compact('searchModel', 'restrictedUserDataProvider', 'surveyId', 'withUserSearch'));
     ?>
 </div>
 

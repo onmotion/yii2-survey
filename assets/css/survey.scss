@@ -651,8 +651,10 @@ $questionHeader: #374141;
   }
 }
 
-#survey-respondents-pjax {
-  #survey-respondents-list {
+#survey-respondents-pjax,
+#survey-restricted-users-pjax {
+  #survey-respondents-list,
+  #survey-restricted-users-list {
     margin-top: 20px;
 
     .summary {
@@ -788,6 +790,7 @@ $questionHeader: #374141;
     align-items: flex-start;
     display: block;
     background: $secondaryColor;
+    border-radius: 5px;
 
     .subcontainer {
       max-width: 900px;

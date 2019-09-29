@@ -96,6 +96,11 @@
             $('body').toggleClass('modal-open');
         });
 
+        $(document).on('click', '.restricted-users-toggle', function (e) {
+            $('#restricted-users-modal').toggleClass('opened');
+            $('body').toggleClass('modal-open');
+        });
+
 
         function confirmForm(form) {
             return new Promise((resolve, reject) => {

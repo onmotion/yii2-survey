@@ -35,6 +35,7 @@ use yii\helpers\ArrayHelper;
  * @property-read User[] $restrictedUsers
  * @property Badge $badge
  *
+ * @property-read int $restrictedUserCount
  * @property-read int[] $restrictedUserIds
  * @property-read string[] $restrictedUserNames
  * @property-read boolean $isAccessibleByCurrentUser
@@ -213,7 +214,29 @@ class Survey extends \yii\db\ActiveRecord
         }
     }
 
-    public function getRestrictedUserIds() {
+    public static function assignRestrictedUser($userId, $surveyId) {
+    	$survey = self::findOne($surveyId);
+	    $userClass = \Yii::$app->user->identityClass;
+	    $survey->link('restrictedUsers', $userClass::findOne($userId));
+	    return true;
+    }
+
+    public static function unassignRestrictedUser($userId, $surveyId) {
+    	$survey = self::findOne($surveyId);
+	    $userClass = \Yii::$app->user->identityClass;
+	    $survey->unlink('restrictedUsers', $userClass::findOne($userId), true);
+	    return true;
+    }
+
+	public function getRestrictedUsersCount()
+	{
+		return self::find()
+			->innerJoin('survey_restricted_user', 'survey_id = survey_restricted_user_survey_id')
+			->where(['survey_id' => $this->survey_id])
+			->count();
+	}
+
+	public function getRestrictedUserIds() {
     	return ArrayHelper::map($this->restrictedUsers, 'id', 'id');
     }
 
