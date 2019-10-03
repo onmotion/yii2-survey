@@ -9,13 +9,16 @@
 use kartik\dialog\Dialog;
 use kartik\editable\Editable;
 use kartik\helpers\Html;
+use kartik\select2\Select2;
 use onmotion\yii2\widget\upload\crop\UploadCrop;
 use yii\helpers\Url;
+use yii\web\JsExpression;
 use yii\widgets\ActiveForm;
 use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $survey \onmotion\survey\models\Survey */
+/* @var $withUserSearch boolean */
 
 // widget with default options
 echo Dialog::widget();
@@ -81,6 +84,8 @@ echo Dialog::widget();
 
             echo Html::tag('br', '');
 
+            echo Html::beginTag('div', ['class' => 'survey-content-wrap']);
+            echo Html::beginTag('div', ['class' => 'row']);
             echo Html::beginTag('div', ['class' => 'col-md-6']);
             echo Html::label(Yii::t('survey', 'Expired at') . ': ', 'survey-survey_expired_at');
             echo Editable::widget([
@@ -109,8 +114,9 @@ echo Dialog::widget();
                     'class' => 'btn btn-sm btn-primary'
                 ]
             ]);
+            echo Html::endTag('div'); // col-md-6
 
-            echo Html::tag('div', '', ['class' => 'clearfix']);
+            echo Html::beginTag('div', ['class' => 'col-md-6']);
             echo Html::label(Yii::t('survey', 'Time to pass') . ': ', 'survey-survey_time_to_pass');
             echo Editable::widget([
                 'model' => $survey,
@@ -129,10 +135,10 @@ echo Dialog::widget();
                 ]
             ]);
             echo Html::label(Yii::t('survey', 'minutes'));
+            echo Html::endTag('div'); // col-md-6
 
-            echo Html::endTag('div');
+            echo Html::endTag('div'); // row
 
-            echo Html::beginTag('div', ['class' => 'col-md-6']);
 
             Pjax::begin([
                 'id' => 'survey-pjax',
@@ -157,26 +163,67 @@ echo Dialog::widget();
                 ],
             ]);
 
+            echo Html::beginTag('div', ['class' => 'row']);
             echo Html::beginTag('div', ['class' => 'col-md-12']);
             echo $form->field($survey, "survey_descr", ['template' => "<div class='survey-form-field'>{label}{input}</div>",]
             )->textarea(['rows' => 3]);
             echo Html::tag('div', '', ['class' => 'clearfix']);
-            echo Html::endTag('div');
+            echo Html::endTag('div'); // col-md-12
+            echo Html::endTag('div'); // row
 
-
-            echo Html::beginTag('div', ['class' => 'col-md-6']);
+            echo Html::beginTag('div', ['class' => 'row']);
+            echo Html::beginTag('div', ['class' => 'col-md-3']);
             echo $form->field($survey, "survey_is_closed", ['template' => "<div class='survey-form-field submit-on-click'>{input}{label}</div>",]
             )->checkbox(['class' => 'checkbox danger'], false);
             echo Html::tag('div', '', ['class' => 'clearfix']);
             echo $form->field($survey, "survey_is_pinned", ['template' => "<div class='survey-form-field submit-on-click'>{input}{label}</div>",]
             )->checkbox(['class' => 'checkbox'], false);
-            echo Html::endTag('div');
+            echo Html::tag('div', '', ['class' => 'clearfix']);
+            echo $form->field($survey, "survey_is_visible", ['template' => "<div class='survey-form-field submit-on-click'>{input}{label}</div>",]
+            )->checkbox(['class' => 'checkbox'], false);
+			if ($withUserSearch) {
+				echo Html::tag('div', '', ['class' => 'clearfix']);
+				echo $form->field($survey,
+					"survey_is_private",
+					['template' => "<div class='survey-form-field submit-on-click'>{input}{label}</div>",]
+				)->checkbox(['class' => 'checkbox danger'], false);
+			}
+            echo Html::endTag('div'); // col-md-3
 
-            echo Html::beginTag('div', ['class' => 'col-md-6']);
+            echo Html::beginTag('div', ['class' => 'col-md-9']);
             echo $form->field($survey, "survey_tags")->input('text', ['placeholder' => 'Comma separated']);
-
-            echo Html::endTag('div');
-
+			if ($withUserSearch) {
+				echo Html::tag('div', '', ['class' => 'clearfix']);
+				echo $form->field($survey, 'restrictedUserIds')->widget(Select2::classname(),
+					[
+						'initValueText' => $survey->restrictedUsernames, // set the initial display text
+						'options' => ['placeholder' => \Yii::t('survey', 'Restrict survey to selected user...')],
+						'pluginOptions' => [
+							'allowClear' => true,
+							'minimumInputLength' => 3,
+							'language' => [
+								'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+							],
+							'ajax' => [
+								'url' => Url::toRoute(['default/search-respondents-by-token']),
+								'dataType' => 'json',
+								'data' => new JsExpression('function(params) { return {token:params.term}; }')
+							],
+							'multiple' => true,
+							'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+							'templateResult' => new JsExpression('function(city) { return city.text; }'),
+							'templateSelection' => new JsExpression('function (city) { return city.text; }'),
+						],
+						'pluginEvents' => [
+							'change' => new JsExpression('function() {         
+				                var container = $(this).closest(\'[data-pjax-container]\');
+		                        container.find(\'button[type=submit]\').click(); 
+		                    }')
+						]
+					]);
+			}
+            echo Html::endTag('div'); // col-md-9
+            echo Html::endTag('div'); // row
 
             echo Html::submitButton('', ['class' => 'hidden']);
             echo Html::tag('div', '', ['class' => 'clearfix']);
@@ -184,6 +231,7 @@ echo Dialog::widget();
             ActiveForm::end();
 
             Pjax::end();
+            echo Html::endTag('div');
 
             ?>
         </div>

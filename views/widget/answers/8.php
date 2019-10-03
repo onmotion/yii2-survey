@@ -14,10 +14,11 @@ use yii\helpers\Url;
 
 /** @var $question \onmotion\survey\models\SurveyQuestion */
 /** @var $form \yii\widgets\ActiveForm */
+/** @var $readonly boolean */
 
 $userAnswers = $question->userAnswers;
 $userAnswer = !empty(current($userAnswers)) ? current($userAnswers) : (new SurveyUserAnswer()) ;
 
 echo $form->field($userAnswer, "[$question->survey_question_id]survey_user_answer_text")->textarea(
-    ['placeholder' => \Yii::t('survey', 'Enter your answer here'), 'rows' => 6])->label(\Yii::t('survey', 'Answer'));
+    ['placeholder' => \Yii::t('survey', 'Enter your answer here'), 'rows' => 6, 'disabled' => $readonly])->label(\Yii::t('survey', 'Answer'));
 

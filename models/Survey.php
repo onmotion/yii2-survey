@@ -3,6 +3,8 @@
 namespace onmotion\survey\models;
 
 use Yii;
+use yii\db\conditions\AndCondition;
+use yii\db\conditions\OrCondition;
 use yii\db\Expression;
 use yii\helpers\ArrayHelper;
 
@@ -17,6 +19,8 @@ use yii\helpers\ArrayHelper;
  * @property string $survey_expired_at
  * @property boolean $survey_is_pinned
  * @property boolean $survey_is_closed
+ * @property boolean $survey_is_private
+ * @property boolean $survey_is_visible
  * @property integer $survey_wallet
  * @property integer $survey_status
  * @property integer $survey_time_to_pass
@@ -28,7 +32,13 @@ use yii\helpers\ArrayHelper;
  * @property SurveyUserAnswer[] $surveyUserAnswers
  * @property SurveyQuestion[] $questions
  * @property SurveyStat[] $stats
+ * @property-read User[] $restrictedUsers
  * @property Badge $badge
+ *
+ * @property-read int $restrictedUserCount
+ * @property-read int[] $restrictedUserIds
+ * @property-read string[] $restrictedUserNames
+ * @property-read boolean $isAccessibleByCurrentUser
  */
 class Survey extends \yii\db\ActiveRecord
 {
@@ -59,13 +69,13 @@ class Survey extends \yii\db\ActiveRecord
     {
         return [
             [['survey_created_at', 'survey_updated_at', 'survey_expired_at'], 'safe'],
-            [['survey_is_pinned', 'survey_is_closed'], 'boolean'],
+            [['survey_is_pinned', 'survey_is_closed', 'survey_is_private', 'survey_is_visible'], 'boolean'],
             [['survey_name'], 'string', 'max' => 45],
             [['survey_descr'], 'string'],
             [['survey_tags', 'survey_image'], 'string', 'max' => 255],
             [['survey_name'], 'required'],
             [['survey_wallet', 'survey_status', 'survey_created_by', 'survey_time_to_pass', 'survey_badge_id'], 'integer'],
-            [['imageFile'], 'file', 'mimeTypes' => 'image/jpeg, image/png', 'maxSize' => 5000000],
+            [['imageFile'], 'file', 'mimeTypes' => 'image/jpeg, image/png', 'maxSize' => 5000000]
         ];
     }
 
@@ -82,10 +92,13 @@ class Survey extends \yii\db\ActiveRecord
             'survey_expired_at' => Yii::t('survey', 'Expired at'),
             'survey_is_pinned' => Yii::t('survey', 'Pinned'),
             'survey_is_closed' => Yii::t('survey', 'Closed'),
+            'survey_is_private' => Yii::t('survey', 'Private'),
+            'survey_is_visible' => Yii::t('survey', 'Visible'),
             'survey_wallet' => Yii::t('survey', 'Price'),
             'survey_tags' => Yii::t('survey', 'Tags'),
             'survey_descr' => Yii::t('survey', 'Description'),
             'survey_time_to_pass' => Yii::t('survey', 'Time to pass'),
+            'restrictedUserIds' => Yii::t('survey', 'Restricted users'),
             'imageFile' => '',
         ];
     }
@@ -112,6 +125,15 @@ class Survey extends \yii\db\ActiveRecord
     public function getStats()
     {
         return $this->hasMany(SurveyStat::class, ['survey_stat_survey_id' => 'survey_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRestrictedUsers()
+    {
+        return $this->hasMany(Yii::$app->user->identityClass, ['id' => 'survey_restricted_user_user_id'])
+	        ->viaTable('survey_restricted_user', ['survey_restricted_user_survey_id' => 'survey_id']);
     }
 
     public function getStatus()
@@ -144,7 +166,18 @@ class Survey extends \yii\db\ActiveRecord
     static function getDropdownList()
     {
         return ArrayHelper::map(self::find()
-            ->where(['or', ['>', 'survey_expired_at', new Expression('NOW()')], ['survey_expired_at' => null]])
+	        ->leftJoin('survey_restricted_user', 'survey_id = survey_restricted_user_survey_id')
+            ->where(new AndCondition([
+	            ['survey_is_visible' => 1],
+            	new OrCondition([
+		            ['>', 'survey_expired_at', new Expression('NOW()')],
+		            ['survey_expired_at' => null]
+	            ]),
+	            new OrCondition([
+	            	['survey_is_private' => 0],
+		            ['survey_restricted_user_user_id' => \Yii::$app->user->id]
+	            ])
+            ]))
             ->orderBy(['survey_created_at' => SORT_ASC])
             ->asArray()->all(), 'survey_id', 'survey_name');
     }
@@ -179,6 +212,43 @@ class Survey extends \yii\db\ActiveRecord
         } catch (\Throwable $e) {
             return 'undefined';
         }
+    }
 
+    public static function assignRestrictedUser($userId, $surveyId) {
+    	$survey = self::findOne($surveyId);
+	    $userClass = \Yii::$app->user->identityClass;
+	    $survey->link('restrictedUsers', $userClass::findOne($userId));
+	    return true;
+    }
+
+    public static function unassignRestrictedUser($userId, $surveyId) {
+    	$survey = self::findOne($surveyId);
+	    $userClass = \Yii::$app->user->identityClass;
+	    $survey->unlink('restrictedUsers', $userClass::findOne($userId), true);
+	    return true;
+    }
+
+	public function getRestrictedUsersCount()
+	{
+		return self::find()
+			->innerJoin('survey_restricted_user', 'survey_id = survey_restricted_user_survey_id')
+			->where(['survey_id' => $this->survey_id])
+			->count();
+	}
+
+	public function getRestrictedUserIds() {
+    	return ArrayHelper::map($this->restrictedUsers, 'id', 'id');
+    }
+
+    public function getRestrictedUserNames() {
+    	return ArrayHelper::map($this->restrictedUsers, 'id', 'fullname');
+    }
+
+    public function isAccessibleBy($userId) {
+	    return ($this->survey_is_visible && (!$this->survey_is_private || in_array($userId, $this->restrictedUserIds)));
+    }
+
+    public function getIsAccessibleByCurrentUser() {
+    	return $this->isAccessibleBy(\Yii::$app->user->id);
     }
 }

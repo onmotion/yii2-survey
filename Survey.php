@@ -54,6 +54,10 @@ class Survey extends \yii\base\Widget
         SurveyWidgetAsset::register($view);
 
         $survey = $this->findModel($this->surveyId);
+        if (!$survey || !$survey->isAccessibleByCurrentUser) {
+	        return $this->renderUnavailable();
+        }
+
         $status = $survey->getStatus();
         if ($status !== 'active') {
             return $this->renderClosed();
@@ -81,6 +85,11 @@ class Survey extends \yii\base\Widget
     private function renderClosed()
     {
         echo $this->render('widget/default/closed');
+    }
+
+    private function renderUnavailable()
+    {
+        echo $this->render('widget/default/unavailable');
     }
 
     private function renderSurvey($id, $stat)

@@ -304,7 +304,6 @@ $questionHeader: #374141;
 
     .select2-container--krajee {
       display: inline-block;
-      width: inherit !important;
       min-width: 200px;
 
       .select2-selection--single {
@@ -652,8 +651,10 @@ $questionHeader: #374141;
   }
 }
 
-#survey-respondents-pjax {
-  #survey-respondents-list {
+#survey-respondents-pjax,
+#survey-restricted-users-pjax {
+  #survey-respondents-list,
+  #survey-restricted-users-list {
     margin-top: 20px;
 
     .summary {
@@ -787,9 +788,9 @@ $questionHeader: #374141;
 #survey-widget, #survey-view {
   #survey-title {
     align-items: flex-start;
-    height: 300px;
     display: block;
     background: $secondaryColor;
+    border-radius: 5px;
 
     .subcontainer {
       max-width: 900px;

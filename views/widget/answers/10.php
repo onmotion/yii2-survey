@@ -13,6 +13,7 @@ use yii\helpers\Url;
 
 /** @var $question \onmotion\survey\models\SurveyQuestion */
 /** @var $form \yii\widgets\ActiveForm */
+/** @var $readonly boolean */
 
 $userAnswers = $question->userAnswers;
 
@@ -37,7 +38,7 @@ foreach ($question->answers as $i => $answer) {
 	echo Html::tag('div', $form->field($userAnswer, "[$question->survey_question_id][$answer->survey_answer_id]survey_user_answer_value",[
 		'template' => "{input}{label}\n{hint}\n{error}",
 	])
-		->dropDownList($ddList, ['encode' => false, 'prompt' => \Yii::t('survey', 'Select...')])->label(false));
+		->dropDownList($ddList, ['encode' => false, 'prompt' => \Yii::t('survey', 'Select...'), 'disabled' => $readonly])->label(false));
 	echo $label;
 	echo Html::endTag('div');
 
