@@ -192,36 +192,7 @@ echo Dialog::widget();
 
             echo Html::beginTag('div', ['class' => 'col-md-9']);
             echo $form->field($survey, "survey_tags")->input('text', ['placeholder' => 'Comma separated']);
-			if ($withUserSearch) {
-				echo Html::tag('div', '', ['class' => 'clearfix']);
-				echo $form->field($survey, 'restrictedUserIds')->widget(Select2::classname(),
-					[
-						'initValueText' => $survey->restrictedUsernames, // set the initial display text
-						'options' => ['placeholder' => \Yii::t('survey', 'Restrict survey to selected user...')],
-						'pluginOptions' => [
-							'allowClear' => true,
-							'minimumInputLength' => 3,
-							'language' => [
-								'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-							],
-							'ajax' => [
-								'url' => Url::toRoute(['default/search-respondents-by-token']),
-								'dataType' => 'json',
-								'data' => new JsExpression('function(params) { return {token:params.term}; }')
-							],
-							'multiple' => true,
-							'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-							'templateResult' => new JsExpression('function(city) { return city.text; }'),
-							'templateSelection' => new JsExpression('function (city) { return city.text; }'),
-						],
-						'pluginEvents' => [
-							'change' => new JsExpression('function() {         
-				                var container = $(this).closest(\'[data-pjax-container]\');
-		                        container.find(\'button[type=submit]\').click(); 
-		                    }')
-						]
-					]);
-			}
+
             echo Html::endTag('div'); // col-md-9
             echo Html::endTag('div'); // row
 
